@@ -1,0 +1,138 @@
+{
+    "total_objects_scanned": 19,
+    "object_nodes": [
+        {
+            "module": "Macro & Competitor",
+            "metric": "Beaute Research Overall Market Growth YOY",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_22293",
+            "status": "Ingested"
+        },
+        {
+            "module": "Macro & Competitor",
+            "metric": "PCD Brand SOM (Market Share)",
+            "implied_dimension": "Mass & Density",
+            "object_id": "OBJ_43653",
+            "status": "Ingested"
+        },
+        {
+            "module": "Macro & Competitor",
+            "metric": "Top 5 Competitor SOM Trends",
+            "implied_dimension": "Displacement",
+            "object_id": "OBJ_58785",
+            "status": "Ingested"
+        },
+        {
+            "module": "Social Voice",
+            "metric": "Weibo Brand TTL Engagement",
+            "implied_dimension": "Force/Mass",
+            "object_id": "OBJ_71565",
+            "status": "Ingested"
+        },
+        {
+            "module": "Social Voice",
+            "metric": "Xiaohongshu Brand Search Index MOM",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_24058",
+            "status": "Ingested"
+        },
+        {
+            "module": "Social Voice",
+            "metric": "Douyin Brand TTL Search Index MOM",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_93937",
+            "status": "Ingested"
+        },
+        {
+            "module": "Consumer Assets (AIPL)",
+            "metric": "Tmall Awareness (A) Pool Absolute Volume",
+            "implied_dimension": "Mass & Density",
+            "object_id": "OBJ_04141",
+            "status": "Ingested"
+        },
+        {
+            "module": "Consumer Assets (AIPL)",
+            "metric": "Tmall Interest (I) Pool Absolute Volume",
+            "implied_dimension": "Mass & Density",
+            "object_id": "OBJ_88661",
+            "status": "Ingested"
+        },
+        {
+            "module": "Consumer Assets (AIPL)",
+            "metric": "A to I Conversion Rate",
+            "implied_dimension": "Friction",
+            "object_id": "OBJ_70636",
+            "status": "Ingested"
+        },
+        {
+            "module": "Content & Engagement",
+            "metric": "WeChat OA Article Open Rate",
+            "implied_dimension": "Friction",
+            "object_id": "OBJ_04097",
+            "status": "Ingested"
+        },
+        {
+            "module": "Content & Engagement",
+            "metric": "WeChat OA CVR with Direct Link",
+            "implied_dimension": "Friction/Mass",
+            "object_id": "OBJ_12456",
+            "status": "Ingested"
+        },
+        {
+            "module": "Content & Engagement",
+            "metric": "Video Views Completion Rate",
+            "implied_dimension": "Friction",
+            "object_id": "OBJ_31186",
+            "status": "Ingested"
+        },
+        {
+            "module": "Channel Sales (EC & Offline)",
+            "metric": "Offline Sales Total Value YOY",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_18173",
+            "status": "Ingested"
+        },
+        {
+            "module": "Channel Sales (EC & Offline)",
+            "metric": "JD Platform Sales Value YOY",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_30975",
+            "status": "Ingested"
+        },
+        {
+            "module": "Channel Sales (EC & Offline)",
+            "metric": "Tmall Platform Sales Value YOY",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_09905",
+            "status": "Ingested"
+        },
+        {
+            "module": "CRM & Operations",
+            "metric": "Offline New Customer Acquisition Volume",
+            "implied_dimension": "Mass",
+            "object_id": "OBJ_96971",
+            "status": "Ingested"
+        },
+        {
+            "module": "CRM & Operations",
+            "metric": "Offline New Customer Growth YOY",
+            "implied_dimension": "Acceleration",
+            "object_id": "OBJ_66022",
+            "status": "Ingested"
+        },
+        {
+            "module": "CRM & Operations",
+            "metric": "High-Tier Member (PL/GC) Growth Rate",
+            "implied_dimension": "Acceleration/Density",
+            "object_id": "OBJ_51612",
+            "status": "Ingested"
+        },
+        {
+            "module": "CRM & Operations",
+            "metric": "Overall CRM Member Retention Rate",
+            "implied_dimension": "Friction",
+            "object_id": "OBJ_27084",
+            "status": "Ingested"
+        }
+    ]
+}

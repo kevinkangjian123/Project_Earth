@@ -1,0 +1,14 @@
+{
+    "engine": "MARS Temporal Monte Carlo",
+    "iterations": 10000,
+    "temporal_parameters": {
+        "t_lag_threshold_days": 21,
+        "days_elapsed": 7,
+        "kinetic_maturity": "33.3%"
+    },
+    "prediction_interval": "[-0.030, 0.560]",
+    "actual_observation": -0.01,
+    "status": "NORMAL (MOMENTUM BUILDING)",
+    "diagnosis": "Observation is currently negative (-0.01), but this is expected physics at day 7. The Force has not overcome T_lag yet. Do not panic.",
+    "self_correction_action": "Continue observing until T_lag (Day 21) is reached."
+}

@@ -1,0 +1,53 @@
+{
+    "macro_gravity_field": {
+        "description": "Objective environment and competitor mass (Cannot be directly altered)",
+        "metrics": [
+            {
+                "metric_name": "Q4 Market Growth (Beaute Research)",
+                "value": "+8.5%",
+                "category": "Market Trend",
+                "objective_meaning": "The total volume of the market category expanded by 8.5%."
+            }
+        ]
+    },
+    "jtbd_demand_field": {
+        "description": "Consumer intent, momentum, and displacement (The 4 dimensions)",
+        "metrics": [
+            {
+                "metric_name": "Douyin Brand TTL Search",
+                "value": "-70%",
+                "dimension": "Acceleration",
+                "objective_meaning": "The frequency of users actively searching for the brand on Douyin dropped by 70%."
+            },
+            {
+                "metric_name": "Xiaohongshu Search Index",
+                "value": "+22%",
+                "dimension": "Acceleration",
+                "objective_meaning": "The frequency of users actively searching for the brand on Xiaohongshu increased by 22%."
+            },
+            {
+                "metric_name": "WeChat OA CVR (with direct link)",
+                "value": "+42%",
+                "dimension": "Mass",
+                "objective_meaning": "The ratio of users purchasing after reading an article increased by 42% when a link was provided."
+            }
+        ]
+    },
+    "supply_capability_field": {
+        "description": "Internal constraints, channel execution, and HR/Operations",
+        "metrics": [
+            {
+                "metric_name": "Offline New Customer Acquisition",
+                "value": "-15.5%",
+                "category": "Channel Execution",
+                "objective_meaning": "The absolute number of first-time buyers at physical counters decreased by 15.5%."
+            },
+            {
+                "metric_name": "JD Online Sales Growth",
+                "value": "+67.5%",
+                "category": "Channel Execution",
+                "objective_meaning": "The gross merchandise value generated through the JD platform increased by 67.5%."
+            }
+        ]
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "diagnosis": "Malignant Channel Cannibalization (内部恶性串货)",
+    "root_cause_uuid": "JD_FORCE_001",
+    "evidence_chain": "JD_FORCE_001 acceleration caused severe momentum shift, confirmed via API probing that competitors are not discounting. This is an unforced internal error.",
+    "next_step": "Trigger Step 3.5 Rosetta Stone for external scraping target generation."
+}

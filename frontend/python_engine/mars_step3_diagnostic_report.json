@@ -1,0 +1,15 @@
+{
+    "engine": "MARS Step 3: Hypothetico-Deductive Search",
+    "anomaly_seed": {
+        "symptom": "JD Sales +60%, Offline Sales -15%",
+        "status": "CONFIRMED_ANOMALY"
+    },
+    "global_context": "Market is in Zero-Sum contraction.",
+    "falsification_log": [
+        "Tested Offline Experience -> Falsified.",
+        "Tested Pricing Arbitrage -> Confirmed."
+    ],
+    "final_diagnosis": "恶性渠道互割 (Malignant Channel Cannibalization).",
+    "root_cause_chain": "在宏观大盘萎缩（Zero-Sum）的前提下，京东释放了 35% 的深度折扣（High Force），而线下体系维持 5% 折扣。30% 的套利空间打破了消费者的物理惯性，导致线下客流被线上强行虹吸。此非自然增长，而是内部左手倒右手的重度失血。",
+    "next_step": "Trigger Step 4 (External Validation) to see if competitors are also doing this."
+}

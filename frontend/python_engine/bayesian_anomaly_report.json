@@ -1,0 +1,41 @@
+{
+    "scan_type": "Bayesian Time-Series Deviation",
+    "nodes_scanned": 19,
+    "anomalies_detected": 2,
+    "results": [
+        {
+            "anomaly_id": "ANOM_001",
+            "node_a": {
+                "id": "OBJ_30975",
+                "metric": "JD Platform Sales Value YOY",
+                "current_val": "+67.5%"
+            },
+            "node_b": {
+                "id": "OBJ_18173",
+                "metric": "Offline Sales Total Value YOY",
+                "current_val": "-15.5%"
+            },
+            "statistical_model": "Bivariate Normal Distribution (Historical r=0.45)",
+            "probability_of_occurrence": "0.012%",
+            "sigma_deviation": 3.8,
+            "status": "CRITICAL OUTLIER DETECTED"
+        },
+        {
+            "anomaly_id": "ANOM_002",
+            "node_a": {
+                "id": "OBJ_93937",
+                "metric": "Douyin Brand TTL Search Index MOM",
+                "current_val": "-70%"
+            },
+            "node_b": {
+                "id": "OBJ_04141",
+                "metric": "Tmall Awareness (A) Pool Absolute Volume",
+                "current_val": "-5%"
+            },
+            "statistical_model": "Conditional Probability P(B|A)",
+            "probability_of_occurrence": "0.35000000000000003%",
+            "sigma_deviation": 2.9,
+            "status": "HIGH OUTLIER DETECTED"
+        }
+    ]
+}

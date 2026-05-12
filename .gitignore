@@ -1,0 +1,41 @@
+# ==========================================
+# 🛑 SECURITY: GEMINI API KEYS & SECRETS 🛑
+# ==========================================
+# [总控请注意]：请将您的 Gemini API Key 放在 `frontend/.env.local` 文件中。
+# 例如，在 `frontend/.env.local` 中写入：GEMINI_API_KEY=AIzaSy...
+# 下方的规则会确保您的密钥绝对不会被上传到 GitHub！
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+frontend/.env.local
+
+# ==========================================
+# 📦 HEAVY RAW FILES (5MB+) 📦
+# ==========================================
+# 防止大体积的原始业务文件卡死 Git 推送
+*.xlsx
+*.pdf
+PCD GM Scorecard 202601 vf.xlsx
+Case_AI Innovation for Haleon_1211.pdf
+
+# Frontend (Node/Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+npm-debug.log*
+
+# Backend (Python)
+.venv/
+__pycache__/
+*.pyc
+
+# System Files
+.DS_Store
+
+# Raw Data
+*.xlsx
+*.pdf
