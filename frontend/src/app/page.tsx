@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Globe,
-  Send
+  Send,
+  Lightbulb
 } from "lucide-react";
 import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
@@ -153,8 +154,8 @@ export default function Dashboard() {
                   className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4"
                 >
                   {facts.map(fact => (
-                    <Tooltip key={fact.id} text={fact.businessValue}>
-                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center group cursor-help transition-all hover:border-blue-300">
+                    <div key={fact.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm transition-all hover:border-blue-300 flex flex-col justify-between">
+                      <div className="flex justify-between items-start mb-3">
                         <div>
                           <div className="flex items-center space-x-2">
                             <p className="text-sm font-medium text-slate-500">{fact.label}</p>
@@ -166,7 +167,10 @@ export default function Dashboard() {
                           {fact.trend === 'down' ? <AlertTriangle className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
                         </div>
                       </div>
-                    </Tooltip>
+                      <div className="border-t border-slate-100 pt-3 mt-1">
+                        <p className="text-[11px] text-slate-500 leading-relaxed"><strong className="text-slate-700">{lang === 'zh' ? '业务意义：' : 'Business Value: '}</strong>{fact.businessValue}</p>
+                      </div>
+                    </div>
                   ))}
                 </motion.div>
                 <motion.div 
@@ -242,6 +246,19 @@ export default function Dashboard() {
                 <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-500">
                   <strong className="text-slate-700">{t.factCheckStatus}</strong> {t.factCheckDesc}
+                </p>
+              </div>
+
+              {/* Strategic Recommendation */}
+              <div className="bg-blue-900 text-white rounded-xl p-6 shadow-md relative overflow-hidden mt-8">
+                <div className="absolute -top-10 -right-10 p-4 opacity-5 pointer-events-none">
+                  <Lightbulb className="w-48 h-48" />
+                </div>
+                <h3 className="text-sm font-semibold flex items-center mb-3 relative z-10">
+                  <Lightbulb className="w-4 h-4 mr-2 text-yellow-400" /> {t.reportRecommendationTitle}
+                </h3>
+                <p className="text-sm leading-relaxed text-blue-50 relative z-10">
+                  <span dangerouslySetInnerHTML={{ __html: t.reportRecommendationBody }} />
                 </p>
               </div>
             </div>

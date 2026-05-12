@@ -32,6 +32,8 @@ export const dict = {
         desc: 'Logic & Data: Why not just buy more traffic to offset the margin loss? Because external traffic has become prohibitively expensive. Authoritative market reports [3] confirm that bidding costs for Douyin\'s core audience have hit a historical ceiling. Broad-audience media buying is no longer economically viable under the current unit economics.'
       }
     ],
+    reportRecommendationTitle: 'Actionable Strategic Recommendation',
+    reportRecommendationBody: 'The core strategy to break this cycle is: <strong>Force-stop the internal price war</strong>. Within the next 48 hours, eCommerce discount rates must be capped below 10%. We must sacrifice short-term "vanity volume" to protect the core offline profitability from complete erosion. Concurrently, the freed budget must be heavily reallocated to the top-of-funnel social seeding platforms to rebuild the customer pipeline. Please use the [Strategic Simulator] below to validate this P&L projection.',
     reportEvidenceTitle: 'Data Evidence',
     reportSourcesTitle: 'External Lineage',
 
@@ -103,6 +105,8 @@ export const dict = {
         desc: '逻辑与数据：既然利润下降，为何不去买新流量补位？因为买不动了。外部权威研报指出，抖音核心目标人群的竞价获客成本已触及历史高位 [3]。单纯靠砸钱买泛流量的粗放策略，在当前的经济账上已经彻底算不平了，必须转向精细化的客流运营。'
       }
     ],
+    reportRecommendationTitle: '总控战略建议 (Actionable Recommendation)',
+    reportRecommendationBody: '系统给出的核心破局解是：<strong>强行切断内部价格战</strong>。必须在未来 48 小时内，将电商平台的折扣收缩至 10% 以内，牺牲短期的“虚假繁荣”，以保护线下核心大盘不被彻底击穿。同时，释放的预算不能闲置，必须重仓投入到社交种草平台的顶部漏斗，重新蓄水。请在下方【战略推演模拟器】中拉动滑块进行验证。',
     reportEvidenceTitle: '数据佐证 (Data Evidence)',
     reportSourcesTitle: '外部智库与数据血缘 (External Lineage)',
 
