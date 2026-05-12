@@ -38,10 +38,16 @@ export default function Dashboard() {
   const [hasUploaded, setHasUploaded] = useState(false);
   const [isAgentOpen, setIsAgentOpen] = useState(false);
   
-  const [spendDy, setSpendDy] = useState(30);
-  const [spendXhs, setSpendXhs] = useState(15);
-  const [discountJd, setDiscountJd] = useState(20);
-  const [discountOff, setDiscountOff] = useState(10);
+  const [spendDy, setSpendDy] = useState(0);
+  const [spendXhs, setSpendXhs] = useState(0);
+  const [discountJd, setDiscountJd] = useState(0);
+  const [discountOff, setDiscountOff] = useState(0);
+
+  const formatSliderValue = (val: number, isDiscount: boolean) => {
+    if (val === 0) return lang === 'en' ? 'Baseline (0%)' : '维持现状 (0%)';
+    if (val > 0) return lang === 'en' ? `+${val}%` : (isDiscount ? `加码 (+${val}%)` : `追加 (+${val}%)`);
+    return lang === 'en' ? `${val}%` : (isDiscount ? `收缩 (${val}%)` : `削减 (${val}%)`);
+  };
   
   const [pCompDy, setPCompDy] = useState(25);
   const [pMacroGdp, setPMacroGdp] = useState(2.1);
@@ -113,10 +119,10 @@ export default function Dashboard() {
                   // Dynamic Data Binding: Inject baseline metrics extracted by Python into React State
                   if (data.initial_simulation_metrics) {
                     const baselines = data.initial_simulation_metrics;
-                    if (baselines.spendDy !== undefined) setSpendDy(baselines.spendDy);
-                    if (baselines.spendXhs !== undefined) setSpendXhs(baselines.spendXhs);
-                    if (baselines.discountJd !== undefined) setDiscountJd(baselines.discountJd);
-                    if (baselines.discountOff !== undefined) setDiscountOff(baselines.discountOff);
+                    if (baselines.spendDy !== undefined) setSpendDy(0);
+                    if (baselines.spendXhs !== undefined) setSpendXhs(0);
+                    if (baselines.discountJd !== undefined) setDiscountJd(0);
+                    if (baselines.discountOff !== undefined) setDiscountOff(0);
                     if (baselines.p_comp_dy !== undefined) setPCompDy(baselines.p_comp_dy);
                     if (baselines.p_macro_gdp !== undefined) setPMacroGdp(baselines.p_macro_gdp);
                     if (baselines.p_cat_tmall !== undefined) setPCatTmall(baselines.p_cat_tmall);
@@ -125,27 +131,41 @@ export default function Dashboard() {
                 }} 
               />
             ) : (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
-              >
-                {facts.map(fact => (
-                  <Tooltip key={fact.id} text={fact.businessValue}>
-                    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center group cursor-help transition-all hover:border-blue-300">
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <p className="text-sm font-medium text-slate-500">{fact.label}</p>
-                          <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200">{fact.lineage}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4"
+                >
+                  {facts.map(fact => (
+                    <Tooltip key={fact.id} text={fact.businessValue}>
+                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center group cursor-help transition-all hover:border-blue-300">
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <p className="text-sm font-medium text-slate-500">{fact.label}</p>
+                            <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200">{fact.lineage}</span>
+                          </div>
+                          <h4 className="text-2xl font-semibold mt-1 text-slate-800">{fact.value}</h4>
                         </div>
-                        <h4 className="text-2xl font-semibold mt-1 text-slate-800">{fact.value}</h4>
+                        <div className={`p-2 rounded-lg ${fact.trend === 'down' ? 'bg-red-50 text-red-600' : fact.trend === 'up' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
+                          {fact.trend === 'down' ? <AlertTriangle className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
+                        </div>
                       </div>
-                      <div className={`p-2 rounded-lg ${fact.trend === 'down' ? 'bg-red-50 text-red-600' : fact.trend === 'up' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
-                        {fact.trend === 'down' ? <AlertTriangle className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
-                      </div>
-                    </div>
-                  </Tooltip>
-                ))}
-              </motion.div>
+                    </Tooltip>
+                  ))}
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+                  className="lg:col-span-1"
+                >
+                  <FileUploader 
+                    lang={lang}
+                    compact={true}
+                    onUploadSuccess={(data) => {
+                      console.log("[UI] Additional data uploaded:", data);
+                    }} 
+                  />
+                </motion.div>
+              </div>
             )}
           </section>
 
@@ -215,10 +235,12 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between text-xs mb-2">
                       <span className="text-slate-600 font-medium">{t.m_spend_dy_name}</span>
-                      <span className="text-blue-600 font-semibold">${spendDy}k</span>
+                      <span className={`font-semibold ${spendDy === 0 ? 'text-slate-500' : spendDy > 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                        {formatSliderValue(spendDy, false)}
+                      </span>
                     </div>
                     <input 
-                      type="range" min="0" max="100" 
+                      type="range" min="-50" max="50" step="5"
                       value={spendDy} onChange={(e) => setSpendDy(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
@@ -228,10 +250,12 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between text-xs mb-2">
                       <span className="text-slate-600 font-medium">{t.m_spend_xhs_name}</span>
-                      <span className="text-blue-600 font-semibold">${spendXhs}k</span>
+                      <span className={`font-semibold ${spendXhs === 0 ? 'text-slate-500' : spendXhs > 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                        {formatSliderValue(spendXhs, false)}
+                      </span>
                     </div>
                     <input 
-                      type="range" min="0" max="100" 
+                      type="range" min="-50" max="50" step="5"
                       value={spendXhs} onChange={(e) => setSpendXhs(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
@@ -241,10 +265,12 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between text-xs mb-2">
                       <span className="text-slate-600 font-medium">{t.m_discount_jd_name}</span>
-                      <span className="text-blue-600 font-semibold">{discountJd}%</span>
+                      <span className={`font-semibold ${discountJd === 0 ? 'text-slate-500' : discountJd > 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                        {formatSliderValue(discountJd, true)}
+                      </span>
                     </div>
                     <input 
-                      type="range" min="0" max="40" 
+                      type="range" min="-20" max="20" step="1"
                       value={discountJd} onChange={(e) => setDiscountJd(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
@@ -254,10 +280,12 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between text-xs mb-2">
                       <span className="text-slate-600 font-medium">{t.m_discount_off_name}</span>
-                      <span className="text-blue-600 font-semibold">{discountOff}%</span>
+                      <span className={`font-semibold ${discountOff === 0 ? 'text-slate-500' : discountOff > 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                        {formatSliderValue(discountOff, true)}
+                      </span>
                     </div>
                     <input 
-                      type="range" min="0" max="40" 
+                      type="range" min="-20" max="20" step="1"
                       value={discountOff} onChange={(e) => setDiscountOff(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
@@ -278,11 +306,22 @@ export default function Dashboard() {
                 <div className="space-y-3 relative z-10">
                   {metrics.filter(m => m.type === 'passive').map(metric => (
                     <div key={metric.id} className="bg-white/60 p-3 rounded-lg border border-slate-200/60 flex justify-between items-center backdrop-blur-sm">
-                      <div>
-                        <p className="text-xs font-medium text-slate-700">{metric.name}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <p className="text-xs font-medium text-slate-700">{metric.name}</p>
+                          {metric.id === 'p1' && (
+                            <button 
+                              onClick={() => setIsAgentOpen(true)}
+                              className="text-[10px] bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-0.5 rounded-full flex items-center shadow-sm cursor-pointer transition-colors shrink-0"
+                            >
+                              <Bot className="w-3 h-3 mr-1" />
+                              {lang === 'zh' ? '查竞品详情' : 'Ask Copilot'}
+                            </button>
+                          )}
+                        </div>
                         <p className="text-[10px] text-slate-400 mt-0.5">{metric.description}</p>
                       </div>
-                      <span className="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                      <span className="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded shrink-0">
                         {metric.value > 0 ? '+' : ''}{metric.value}{metric.unit}
                       </span>
                     </div>

@@ -8,9 +8,10 @@ import { dict, Language } from "@/lib/i18n";
 interface FileUploaderProps {
   onUploadSuccess: (data: any) => void;
   lang: Language;
+  compact?: boolean;
 }
 
-export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
+export function FileUploader({ onUploadSuccess, lang, compact = false }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +41,6 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
         return;
       }
 
-      // 1. Chunked Upload Architecture (Bypass Proxy Limits)
-      // REDUCED TO 512KB: Many cloud proxies (Nginx/Caddy) have a hard 1MB default limit.
       const CHUNK_SIZE = 512 * 1024; // 512KB chunks
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
@@ -52,7 +51,6 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
         
         let chunkRes;
         try {
-          console.log(`[Upload] Sending chunk ${i+1}/${totalChunks}...`);
           chunkRes = await fetch(`/api/upload-chunk?hash=${hash}&index=${i}&total=${totalChunks}`, {
             method: 'POST',
             body: chunk,
@@ -61,7 +59,6 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
             }
           });
         } catch (fetchErr: any) {
-          console.error(`[Upload] Chunk ${i} failed. Error:`, fetchErr);
           throw new Error(`Chunk ${i} Network Error: ${fetchErr.message}`);
         }
 
@@ -70,7 +67,6 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
         }
       }
 
-      // 2. Trigger Analysis after all chunks are uploaded
       let uploadRes;
       try {
         uploadRes = await fetch(`/api/analyze?hash=${hash}`, {
@@ -93,9 +89,8 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
       const taskId = initResult.taskId;
       let isComplete = false;
       let attempts = 0;
-      const maxAttempts = 100; // 5 minutes max (100 * 3s)
+      const maxAttempts = 100;
 
-      // 2. Poll for Status
       while (!isComplete && attempts < maxAttempts) {
         await new Promise(r => setTimeout(r, 3000));
         
@@ -145,13 +140,13 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col">
       <motion.div 
         whileHover={{ scale: 1.01 }}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
-        className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-xl flex-1 flex flex-col items-center justify-center cursor-pointer transition-colors ${compact ? 'p-6' : 'p-12'} ${
           isDragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-slate-50'
         }`}
       >
@@ -162,24 +157,26 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
           onChange={onFileSelect}
           accept=".csv,.json,.xlsx,.pdf,.txt"
         />
-        <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer w-full">
-          <div className="p-4 bg-slate-100 rounded-full mb-4">
+        <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer w-full text-center">
+          <div className={`bg-slate-100 rounded-full mb-3 ${compact ? 'p-3' : 'p-4'}`}>
             {isProcessing ? (
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              <Loader2 className={`${compact ? 'w-5 h-5' : 'w-8 h-8'} text-blue-600 animate-spin`} />
             ) : (
-              <UploadCloud className="w-8 h-8 text-slate-600" />
+              <UploadCloud className={`${compact ? 'w-5 h-5' : 'w-8 h-8'} text-slate-600`} />
             )}
           </div>
           
-          <h3 className="text-lg font-medium text-slate-800">
+          <h3 className={`${compact ? 'text-sm' : 'text-lg'} font-medium text-slate-800`}>
             {isProcessing ? t.computing : t.uploadTitle}
           </h3>
           
-          <p className="text-slate-500 text-sm mt-1 mb-4 text-center max-w-md">
-            {isProcessing ? t.computingDesc : t.uploadDesc}
-          </p>
+          {!compact && (
+            <p className="text-slate-500 text-sm mt-1 mb-4 text-center max-w-md">
+              {isProcessing ? t.computingDesc : t.uploadDesc}
+            </p>
+          )}
 
-          {!isProcessing && (
+          {!isProcessing && !compact && (
             <div className="px-6 py-2 bg-slate-900 text-white text-sm rounded-lg shadow-sm">
               {t.browseFiles}
             </div>
