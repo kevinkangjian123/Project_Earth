@@ -18,7 +18,7 @@ import {
 import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
 
-type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral' };
+type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral'; lineage: string; businessValue: string; };
 type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string };
 
 const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => (
@@ -47,10 +47,21 @@ export default function Dashboard() {
   const [pMacroGdp, setPMacroGdp] = useState(2.1);
   const [pCatTmall, setPCatTmall] = useState(-4.5);
 
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [hasSimulated, setHasSimulated] = useState(false);
+
+  const handleSimulate = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+      setHasSimulated(true);
+    }, 1500);
+  };
+
   const facts: Fact[] = [
-    { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down' },
-    { id: '2', label: 'CAC', value: '$45.20', trend: 'up' },
-    { id: '3', label: 'Retention', value: '42%', trend: 'neutral' },
+    { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down', lineage: '[1] 财报行45', businessValue: '核心营收大盘，下降意味着市场份额被蚕食' },
+    { id: '2', label: 'CAC', value: '$45.20', trend: 'up', lineage: '[2] 星图抓取', businessValue: '获客成本剧增，反映平台流量红利触顶' },
+    { id: '3', label: 'Retention', value: '42%', trend: 'neutral', lineage: '[3] CRM系统', businessValue: '留存率停滞，线下专柜体验护城河正在失效' },
   ];
 
   const metrics: Metric[] = [
@@ -91,7 +102,7 @@ export default function Dashboard() {
           <section className="space-y-4">
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <UploadCloud className="w-5 h-5 text-blue-600" />
-              <h2>{t.tier1Title}</h2>
+              <h2>{t.sec1Title}</h2>
             </div>
             
             {!hasUploaded ? (
@@ -119,15 +130,20 @@ export default function Dashboard() {
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
               >
                 {facts.map(fact => (
-                  <div key={fact.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center group">
-                    <div>
-                      <p className="text-sm font-medium text-slate-500">{fact.label}</p>
-                      <h4 className="text-2xl font-semibold mt-1 text-slate-800">{fact.value}</h4>
+                  <Tooltip key={fact.id} text={fact.businessValue}>
+                    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center group cursor-help transition-all hover:border-blue-300">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-slate-500">{fact.label}</p>
+                          <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200">{fact.lineage}</span>
+                        </div>
+                        <h4 className="text-2xl font-semibold mt-1 text-slate-800">{fact.value}</h4>
+                      </div>
+                      <div className={`p-2 rounded-lg ${fact.trend === 'down' ? 'bg-red-50 text-red-600' : fact.trend === 'up' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
+                        {fact.trend === 'down' ? <AlertTriangle className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
+                      </div>
                     </div>
-                    <div className={`p-2 rounded-lg ${fact.trend === 'down' ? 'bg-red-50 text-red-600' : fact.trend === 'up' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
-                      {fact.trend === 'down' ? <AlertTriangle className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
-                    </div>
-                  </div>
+                  </Tooltip>
                 ))}
               </motion.div>
             )}
@@ -136,19 +152,34 @@ export default function Dashboard() {
           <section className={`space-y-4 transition-opacity duration-700 ${hasUploaded ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <FileText className="w-5 h-5 text-blue-600" />
-              <h2>{t.tier2Title}</h2>
+              <h2>{t.sec2Title}</h2>
             </div>
             
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-6">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-8">
+              {/* Executive Summary */}
               <div className="border-l-4 border-blue-600 pl-4 py-1 bg-gradient-to-r from-blue-50 to-transparent">
-                <h3 className="text-xl font-semibold text-slate-900">{t.blufTitle}</h3>
+                <h3 className="text-xl font-semibold text-slate-900">{t.reportAbstractTitle}</h3>
+                <p className="text-slate-700 mt-2 font-medium">{t.reportAbstractBody}</p>
               </div>
               
-              <div className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed">
-                <p>{t.blufPara1}</p>
-                <p>{t.blufPara2}</p>
+              {/* Deep Analysis & Citations */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Activity className="w-4 h-4 mr-2 text-blue-500" /> {t.reportAnalysisTitle}</h4>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    {t.reportAnalysisBody}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Info className="w-4 h-4 mr-2 text-purple-500" /> {t.reportSourcesTitle}</h4>
+                  <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4">
+                    <li><span className="text-blue-500 hover:underline cursor-pointer">[1]</span> Beaute Research Q4 Report (Verified)</li>
+                    <li><span className="text-blue-500 hover:underline cursor-pointer">[2]</span> Scorecard: JD Promotional Data (Row 45)</li>
+                    <li><span className="text-blue-500 hover:underline cursor-pointer">[3]</span> Scorecard: Offline CRM Export (Row 112)</li>
+                  </ul>
+                </div>
               </div>
-              
+
               <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-start space-x-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-500">
@@ -161,7 +192,15 @@ export default function Dashboard() {
           <section className={`space-y-4 pb-20 transition-opacity duration-700 delay-100 ${hasUploaded ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <SlidersHorizontal className="w-5 h-5 text-blue-600" />
-              <h2>{t.tier3Title}</h2>
+              <h2>{t.sec3Title}</h2>
+            </div>
+
+            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5 flex items-start space-x-3 mb-6">
+              <Bot className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-semibold text-blue-900">{t.simBaselineTitle}</h4>
+                <p className="text-xs text-blue-800 mt-1 leading-relaxed">{t.simBaselineDesc}</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -251,16 +290,57 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-slate-900 text-white p-5 rounded-xl flex items-start space-x-4 shadow-lg shadow-slate-900/10">
-              <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-medium">{t.projectedOutcome}</h4>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  {t.projectedDesc.replace('{spendDy}', spendDy.toString()).replace('{discountJd}', discountJd.toString()).replace('{gdp}', metrics.find(m => m.id === 'p2')?.value.toString() || '0')}
-                </p>
-              </div>
+            <div className="flex justify-end pt-4">
+              <button 
+                onClick={handleSimulate}
+                disabled={isSimulating}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center shadow-md disabled:opacity-50"
+              >
+                {isSimulating ? <Activity className="w-4 h-4 mr-2 animate-spin" /> : <SlidersHorizontal className="w-4 h-4 mr-2" />}
+                {isSimulating ? t.simSimulating : t.simConfirmBtn}
+              </button>
             </div>
+
+            {/* P&L Projected Impact */}
+            <AnimatePresence>
+              {hasSimulated && !isSimulating && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-8 space-y-6 overflow-hidden"
+                >
+                  <div className="flex items-center space-x-2 text-slate-800 font-semibold border-b border-slate-200 pb-2">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    <h3>{t.simOutcomeTitle}</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                        <p className="text-xs text-green-700 font-medium">{t.simMetricGMV}</p>
+                        <p className="text-2xl font-bold text-green-800 mt-1">+12.4%</p>
+                     </div>
+                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                        <p className="text-xs text-blue-700 font-medium">{t.simMetricROI}</p>
+                        <p className="text-2xl font-bold text-blue-800 mt-1">1.8 <span className="text-blue-400 mx-1">→</span> 2.1</p>
+                     </div>
+                     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
+                        <p className="text-xs text-orange-700 font-medium">{t.simMetricRisk}</p>
+                        <p className="text-sm font-bold text-orange-800 mt-1">{lang === 'en' ? 'Offline Channel Conflict' : '线下渠道串货抗议'}</p>
+                     </div>
+                  </div>
+
+                  <div className="bg-slate-900 text-white p-5 rounded-xl flex items-start space-x-4 shadow-lg shadow-slate-900/10">
+                    <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-medium">{t.projectedOutcome}</h4>
+                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                        {t.projectedDesc.replace('{spendDy}', spendDy.toString()).replace('{discountJd}', discountJd.toString()).replace('{gdp}', pMacroGdp.toString())}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
 
         </div>
