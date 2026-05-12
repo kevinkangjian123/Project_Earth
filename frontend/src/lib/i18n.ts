@@ -16,20 +16,23 @@ export const dict = {
     
     // Diagnostic Report Sections
     reportAbstractTitle: 'Executive Summary',
-    reportAbstractBody: 'Quarterly revenue remains stable, but overall profitability has experienced an unhealthy contraction. System diagnostics indicate this is not primarily driven by macroeconomic factors, but rather by a misalignment between "acquisition spending" and "retention logic". Currently, aggressive online promotional discounts are driving short-term volume at the unintended expense of high-margin offline repeat customers. Recommendation: Rebalance cross-channel resource allocation and halt internal price cannibalization.',
+    reportAbstractBody: '<p><strong>[Observation]</strong> Quarterly revenue remains stable, but overall profitability has experienced an unhealthy contraction.</p><br/><p><strong>[Root Cause]</strong> System diagnostics indicate this is not primarily driven by macroeconomic factors, but rather by a misalignment between "acquisition spending" and "retention logic". Currently, aggressive online promotional discounts are driving short-term volume at the unintended expense of high-margin offline repeat customers.</p><br/><p><strong>[System Recommendation]</strong> Rebalance cross-channel resource allocation and halt internal price cannibalization.</p>',
     reportAnalysisTitle: 'Attribution Analysis',
     reportAnalysisPoints: [
       {
         title: '1. Where did the profit go? (Online Discounting)',
-        desc: 'Logic & Data: The system tracked a massive 15% increase in eCommerce promotional discounts [2]. While this heavy subsidy drove top-line sales volume, it severely compressed the gross margin per order, acting as the primary leak for profitability.'
+        desc: 'Logic & Data: The system tracked a massive 15% increase in eCommerce promotional discounts. While this heavy subsidy drove top-line sales volume, it severely compressed the gross margin per order, acting as the primary leak for profitability.',
+        sources: [{ label: 'Scorecard: JD Promotional Data (Row 45)', type: 'internal' }]
       },
       {
         title: '2. Why did offline retention drop? (Channel Cannibalization)',
-        desc: 'Logic & Data: Aggressive online discounting inadvertently broke the omni-channel pricing structure. Cross-referencing CRM retention data [1] shows that high-value offline customers discovered the online price gap and shifted their purchases to eCommerce. This represents severe "channel cannibalization"—we are not acquiring net-new customers, but rather converting high-margin existing customers into low-margin ones.'
+        desc: 'Logic & Data: Aggressive online discounting inadvertently broke the omni-channel pricing structure. Cross-referencing CRM retention data shows that high-value offline customers discovered the online price gap and shifted their purchases to eCommerce. This represents severe "channel cannibalization"—we are not acquiring net-new customers, but rather converting high-margin existing customers into low-margin ones.',
+        sources: [{ label: 'Scorecard: Offline CRM Export (Row 112)', type: 'internal' }]
       },
       {
         title: '3. Why is media acquisition failing? (CAC Ceiling)',
-        desc: 'Logic & Data: Why not just buy more traffic to offset the margin loss? Because external traffic has become prohibitively expensive. Authoritative market reports [3] confirm that bidding costs for Douyin\'s core audience have hit a historical ceiling. Broad-audience media buying is no longer economically viable under the current unit economics.'
+        desc: 'Logic & Data: Why not just buy more traffic to offset the margin loss? Because external traffic has become prohibitively expensive. Authoritative market reports confirm that bidding costs for Douyin\'s core audience have hit a historical ceiling. Broad-audience media buying is no longer economically viable under the current unit economics.',
+        sources: [{ label: 'Beaute Research Q4 Bidding Report (Verified)', type: 'external' }]
       }
     ],
     reportRecommendationTitle: 'Actionable Strategic Recommendation',
@@ -89,20 +92,23 @@ export const dict = {
 
     // Diagnostic Report Sections
     reportAbstractTitle: '核心摘要 (Executive Summary)',
-    reportAbstractBody: '本季度营收大盘保持稳定，但整体利润率出现了不健康的收缩。经系统多维测算，这并非受限于外部宏观大盘（GDP 预期仍有微增），而是因为我们的“拉新预算”与“老客复购”出现了错位。目前，大量营销弹药集中在了线上电商的打折促销上，这虽换取了短期单量，却意外牺牲了线下门店的高利润老客户（复购率明显下跌）。系统建议：需立即重新平衡全渠道的资源投放，叫停内部渠道的价格内耗。',
+    reportAbstractBody: '<p><strong>[系统发现]</strong> 本季度营收大盘保持稳定，但整体利润率出现了不健康的收缩。</p><br/><p><strong>[核心病灶]</strong> 经系统多维测算，这并非受限于外部宏观大盘（GDP 预期仍有微增），而是因为我们的“拉新预算”与“老客复购”出现了错位。目前，大量营销弹药集中在了线上电商的打折促销上，这虽换取了短期单量，却意外牺牲了线下门店的高利润老客户（复购率明显下跌）。</p><br/><p><strong>[行动建议]</strong> 需立即重新平衡全渠道的资源投放，叫停内部渠道的价格内耗。</p>',
     reportAnalysisTitle: '异动归因拆解 (Attribution Analysis)',
     reportAnalysisPoints: [
       {
         title: '1. 利润去哪儿了？（线上高额补贴透支利润）',
-        desc: '逻辑与数据：系统追踪到我们在二季度末大幅提高了电商大促的折扣力度（让利空间追加约 15% [2]）。这部分重金砸进去的“价格补贴”，虽然换来了总销量的繁荣，但单笔订单的毛利空间被极度压缩，成了利润流失的第一道缺口。'
+        desc: '逻辑与数据：系统追踪到我们在二季度末大幅提高了电商大促的折扣力度（让利空间追加约 15%）。这部分重金砸进去的“价格补贴”，虽然换来了总销量的繁荣，但单笔订单的毛利空间被极度压缩，成了利润流失的第一道缺口。',
+        sources: [{ label: '京东与天猫促销核销明细报表 (Row 45-89)', type: 'internal' }]
       },
       {
         title: '2. 为什么线下复购会跌？（严重的“渠道互搏”）',
-        desc: '逻辑与数据：线上的激进让利，无意中击穿了全盘的价格体系。CRM 会员库留存数据 [1] 显示，线下专柜的高净值老客户发现了线上的巨大价差，导致大量原本会在线下原价复购的客人，转移到了线上“薅羊毛”。这属于典型的“渠道相食”——并没有带来真正的新客，只是把高利润客户洗成了低利润客户。'
+        desc: '逻辑与数据：线上的激进让利，无意中击穿了全盘的价格体系。CRM 会员库留存数据显示，线下专柜的高净值老客户发现了线上的巨大价差，导致大量原本会在线下原价复购的客人，转移到了线上“薅羊毛”。这属于典型的“渠道相食”——并没有带来真正的新客，只是把高利润客户洗成了低利润客户。',
+        sources: [{ label: 'CRM 全渠道客群重叠分析表 (Row 112)', type: 'internal' }]
       },
       {
         title: '3. 为什么外部买量不管用了？（公域流量遭遇天花板）',
-        desc: '逻辑与数据：既然利润下降，为何不去买新流量补位？因为买不动了。外部权威研报指出，抖音核心目标人群的竞价获客成本已触及历史高位 [3]。单纯靠砸钱买泛流量的粗放策略，在当前的经济账上已经彻底算不平了，必须转向精细化的客流运营。'
+        desc: '逻辑与数据：既然利润下降，为何不去买新流量补位？因为买不动了。外部权威研报指出，抖音核心目标人群的竞价获客成本已触及历史高位。单纯靠砸钱买泛流量的粗放策略，在当前的经济账上已经彻底算不平了，必须转向精细化的客流运营。',
+        sources: [{ label: 'Beaute Research 抖音星图大盘研报 (Verified)', type: 'external' }]
       }
     ],
     reportRecommendationTitle: '总控战略建议 (Actionable Recommendation)',

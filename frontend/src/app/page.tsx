@@ -17,7 +17,8 @@ import {
   Send,
   Lightbulb,
   Download,
-  Loader2
+  Loader2,
+  Database
 } from "lucide-react";
 import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
@@ -94,6 +95,15 @@ export default function Dashboard() {
     { day: 'Today', baseline: 60, projected: 60 },
     { day: '+15d', baseline: 40, projected: 75 },
     { day: '+30d', baseline: 20, projected: 95 },
+  ];
+  
+  const chartDData = [
+    { month: 'Jan', cac: 15, ltv: 80 },
+    { month: 'Feb', cac: 20, ltv: 80 },
+    { month: 'Mar', cac: 25, ltv: 80 },
+    { month: 'Apr', cac: 45, ltv: 78 },
+    { month: 'May', cac: 60, ltv: 75 },
+    { month: 'Jun', cac: 85, ltv: 70 },
   ];
   
   const [spendDy, setSpendDy] = useState(0);
@@ -258,78 +268,83 @@ export default function Dashboard() {
               {/* Executive Summary */}
               <div className="border-l-4 border-blue-600 pl-4 py-1 bg-gradient-to-r from-blue-50 to-transparent">
                 <h3 className="text-xl font-semibold text-slate-900">{t.reportAbstractTitle}</h3>
-                <p className="text-slate-700 mt-2 font-medium">{t.reportAbstractBody}</p>
+                <div className="text-slate-700 mt-2 font-medium space-y-2 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t.reportAbstractBody }} />
               </div>
               
               {/* Deep Analysis & Citations */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Activity className="w-4 h-4 mr-2 text-blue-500" /> {t.reportAnalysisTitle}</h4>
-                  <div className="space-y-6">
-                    {t.reportAnalysisPoints.map((point: any, idx: number) => (
-                      <div key={idx} className="space-y-2">
-                        <h5 className="text-sm font-bold text-slate-800">{point.title}</h5>
-                        <p className="text-slate-600 text-xs leading-relaxed">
-                          {point.desc}
-                        </p>
-                        {idx === 0 && (
-                          <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={chartBData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                <Bar dataKey="value" radius={[4, 4, 4, 4]}>
-                                  {chartBData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                                  ))}
-                                </Bar>
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
-                        )}
-                        {idx === 1 && (
-                          <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <ComposedChart data={chartAData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#ef4444' }} />
-                                <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#3b82f6' }} />
-                                <RechartsTooltip contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                <Bar yAxisId="left" dataKey="onlineDiscount" name={lang === 'zh' ? '线上折扣(%)' : 'Discount(%)'} fill="#fecaca" radius={[2, 2, 0, 0]} />
-                                <Line yAxisId="right" type="monotone" dataKey="offlineRetention" name={lang === 'zh' ? '线下复购(%)' : 'Retention(%)'} stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
-                              </ComposedChart>
-                            </ResponsiveContainer>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Info className="w-4 h-4 mr-2 text-purple-500" /> {t.reportSourcesTitle}</h4>
-                  <ul className="text-xs text-slate-500 space-y-2 list-none">
-                    <li>
-                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
-                        <span className="text-blue-500 mr-2 shrink-0">[1]</span>
-                        <span className="group-hover:underline">Beaute Research Q4 Report (Verified)</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
-                        <span className="text-blue-500 mr-2 shrink-0">[2]</span>
-                        <span className="group-hover:underline">Scorecard: JD Promotional Data (Row 45)</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
-                        <span className="text-blue-500 mr-2 shrink-0">[3]</span>
-                        <span className="group-hover:underline">Scorecard: Offline CRM Export (Row 112)</span>
-                      </button>
-                    </li>
-                  </ul>
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Activity className="w-4 h-4 mr-2 text-blue-500" /> {t.reportAnalysisTitle}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {t.reportAnalysisPoints.map((point: any, idx: number) => (
+                    <div key={idx} className={`space-y-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm transition-all hover:border-blue-300 ${idx === 2 ? 'md:col-span-2' : 'col-span-1'}`}>
+                      <h5 className="text-sm font-bold text-slate-800">{point.title}</h5>
+                      <p className="text-slate-600 text-xs leading-relaxed">
+                        {point.desc}
+                      </p>
+                      {idx === 0 && (
+                        <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartBData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                              <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                              <Bar dataKey="value" radius={[4, 4, 4, 4]}>
+                                {chartBData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+                      {idx === 1 && (
+                        <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={chartAData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                              <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#ef4444' }} />
+                              <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#3b82f6' }} />
+                              <RechartsTooltip contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                              <Bar yAxisId="left" dataKey="onlineDiscount" name={lang === 'zh' ? '线上折扣(%)' : 'Discount(%)'} fill="#fecaca" radius={[2, 2, 0, 0]} />
+                              <Line yAxisId="right" type="monotone" dataKey="offlineRetention" name={lang === 'zh' ? '线下复购(%)' : 'Retention(%)'} stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
+                            </ComposedChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+                      {idx === 2 && (
+                        <div className="h-48 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={chartDData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                              <RechartsTooltip contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                              <Line type="monotone" dataKey="ltv" name={lang === 'zh' ? '用户生命周期价值 (LTV)' : 'LTV'} stroke="#22c55e" strokeWidth={3} dot={{ r: 4 }} />
+                              <Line type="monotone" dataKey="cac" name={lang === 'zh' ? '单客获客成本 (CAC)' : 'CAC'} stroke="#ef4444" strokeWidth={3} dot={{ r: 4 }} />
+                            </ComposedChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+
+                      {/* Source Citations */}
+                      {point.sources && point.sources.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center space-x-2">
+                          <Database className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            {lang === 'zh' ? '数据溯源:' : 'Lineage Trace:'}
+                          </span>
+                          {point.sources.map((src: any, sIdx: number) => (
+                            <button key={sIdx} onClick={() => setIsAgentOpen(true)} className="text-[10px] flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-colors bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                              {src.type === 'external' ? <Globe className="w-3 h-3 mr-1" /> : <FileText className="w-3 h-3 mr-1" />}
+                              {src.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
