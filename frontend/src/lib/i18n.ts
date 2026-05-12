@@ -16,7 +16,7 @@ export const dict = {
     
     // Diagnostic Report Sections
     reportAbstractTitle: 'Executive Summary',
-    reportAbstractBody: '<p><strong>[Observation]</strong> Quarterly revenue remains stable, but overall profitability has experienced an unhealthy contraction.</p><br/><p><strong>[Root Cause]</strong> System diagnostics indicate this is not primarily driven by macroeconomic factors, but rather by a misalignment between "acquisition spending" and "retention logic". Currently, aggressive online promotional discounts are driving short-term volume at the unintended expense of high-margin offline repeat customers.</p><br/><p><strong>[System Recommendation]</strong> Rebalance cross-channel resource allocation and halt internal price cannibalization.</p>',
+    reportAbstractBody: '<p><strong>[Observation]</strong> Quarterly revenue remains stable, but overall profitability has experienced an unhealthy contraction.</p><br/><p><strong>[Root Cause]</strong> System diagnostics indicate this is not primarily driven by macroeconomic factors, but rather by a misalignment between "acquisition spending" and "retention logic". Currently, aggressive online promotional discounts are driving short-term volume at the unintended expense of high-margin offline repeat customers. Additionally, media budgets are over-indexed on increasingly expensive bottom-of-funnel performance bidding.</p><br/><p><strong>[System Recommendation]</strong> Rebalance cross-channel resource allocation and halt internal price cannibalization.</p>',
     reportAnalysisTitle: 'Attribution Analysis',
     reportAnalysisPoints: [
       {
@@ -31,12 +31,12 @@ export const dict = {
       },
       {
         title: '3. Why is media acquisition failing? (CAC Ceiling)',
-        desc: 'Logic & Data: Why not just buy more traffic to offset the margin loss? Because external traffic has become prohibitively expensive. Authoritative market reports confirm that bidding costs for Douyin\'s core audience have hit a historical ceiling. Broad-audience media buying is no longer economically viable under the current unit economics.',
+        desc: 'Logic & Data: Why not just buy more traffic to offset the margin loss? Because bottom-of-funnel performance bidding (效果竞价) has become prohibitively expensive. Authoritative market reports confirm that direct-conversion CPCs on platforms like Douyin have hit a historical ceiling. Relying on aggressive price-subsidy ads to buy traffic is no longer economically viable under the current unit economics.',
         sources: [{ label: 'Beaute Research Q4 Bidding Report (Verified)', type: 'external' }]
       }
     ],
     reportRecommendationTitle: 'Actionable Strategic Recommendation',
-    reportRecommendationBody: 'Based on the diagnostic data, the system recommends prioritizing the <strong>alleviation of internal channel cannibalization</strong>. To protect offline profitability, you may consider moderately reducing eCommerce discount rates (e.g., capping near 10%). Concurrently, we suggest reallocating the freed budget toward top-of-funnel social seeding platforms to replenish customer acquisition. Please use the [Strategic Simulator] below to adjust these levers and project the P&L impact of various resource allocation scenarios.',
+    reportRecommendationBody: 'Based on the diagnostic data, the system recommends prioritizing the <strong>alleviation of internal channel cannibalization</strong>. To protect offline profitability, you may consider moderately reducing eCommerce discount rates (e.g., capping near 10%). Concurrently, we suggest pivoting the freed budget away from expensive direct-bidding and reallocating it toward high-ROI, top-of-funnel content seeding (e.g., KOL/PR on Xiaohongshu). Use brand value, rather than price subsidies, to build a sustainable customer pipeline. Please use the [Strategic Simulator] below to adjust these levers and project the P&L impact of various resource allocation scenarios.',
     reportEvidenceTitle: 'Data Evidence',
     reportSourcesTitle: 'External Lineage',
 
@@ -92,7 +92,7 @@ export const dict = {
 
     // Diagnostic Report Sections
     reportAbstractTitle: '核心摘要 (Executive Summary)',
-    reportAbstractBody: '<p><strong>[系统发现]</strong> 本季度营收大盘保持稳定，但整体利润率出现了不健康的收缩。</p><br/><p><strong>[核心病灶]</strong> 经系统多维测算，这并非受限于外部宏观大盘（GDP 预期仍有微增），而是因为我们的“拉新预算”与“老客复购”出现了错位。目前，大量营销弹药集中在了线上电商的打折促销上，这虽换取了短期单量，却意外牺牲了线下门店的高利润老客户（复购率明显下跌）。</p><br/><p><strong>[行动建议]</strong> 需立即重新平衡全渠道的资源投放，叫停内部渠道的价格内耗。</p>',
+    reportAbstractBody: '<p><strong>[系统发现]</strong> 本季度营收大盘保持稳定，但整体利润率出现了不健康的收缩。</p><br/><p><strong>[核心病灶]</strong> 经系统多维测算，这并非受限于外部宏观大盘（GDP 预期仍有微增），而是因为我们的“拉新预算”与“老客复购”出现了错位。目前，大量营销弹药不仅集中在了线上电商的打折促销上，且外部买量过度依赖昂贵的底部竞价广告，这虽换取了短期单量，却意外牺牲了线下门店的高利润老客户（复购率明显下跌）。</p><br/><p><strong>[行动建议]</strong> 需立即重新平衡全渠道的资源投放，叫停内部渠道的价格内耗。</p>',
     reportAnalysisTitle: '异动归因拆解 (Attribution Analysis)',
     reportAnalysisPoints: [
       {
@@ -107,12 +107,12 @@ export const dict = {
       },
       {
         title: '3. 为什么外部买量不管用了？（公域流量遭遇天花板）',
-        desc: '逻辑与数据：既然利润下降，为何不去买新流量补位？因为买不动了。外部权威研报指出，抖音核心目标人群的竞价获客成本已触及历史高位。单纯靠砸钱买泛流量的粗放策略，在当前的经济账上已经彻底算不平了，必须转向精细化的客流运营。',
+        desc: '逻辑与数据：既然利润下降，为何不去买新流量补位？因为底部的效果竞价广告（Performance Bidding）太贵了。外部权威研报指出，抖音核心目标人群的直接转化竞价成本（CPC/CPA）已触及历史高位。继续靠砸钱买直投流量的粗放策略，在当前的经济账上已经彻底算不平了，必须寻找低成本的流量平替。',
         sources: [{ label: 'Beaute Research 抖音星图大盘研报 (Verified)', type: 'external' }]
       }
     ],
     reportRecommendationTitle: '总控战略建议 (Actionable Recommendation)',
-    reportRecommendationBody: '基于上述诊断，系统建议优先考虑<strong>缓解内部渠道的价格内耗</strong>。为保护线下基本盘的盈利能力，您可以尝试适度收缩线上电商的折扣力度（例如控制在 10% 左右）。同时，对于由此释放出的营销预算，建议向社交种草平台的顶部漏斗倾斜，以重新进行流量蓄水。您可以直接在下方的【战略推演模拟器】中拉动滑块，自主预演不同资源配置方案对最终利润大盘的影响。',
+    reportRecommendationBody: '基于上述诊断，系统建议优先考虑<strong>缓解内部渠道的价格内耗</strong>。为保护线下基本盘的盈利能力，您可以尝试适度收缩线上电商的折扣力度（例如控制在 10% 左右）。同时，建议将由此释放出的营销预算，从“昂贵的底部竞价”转移到“高ROI的顶部KOL内容种草（如小红书）”。用内容心智代替价格刺激，从而避开昂贵的买量红海，重新进行健康的流量蓄水。您可以直接在下方的【战略推演模拟器】中拉动滑块，自主预演不同资源配置方案对最终利润大盘的影响。',
     reportEvidenceTitle: '数据佐证 (Data Evidence)',
     reportSourcesTitle: '外部智库与数据血缘 (External Lineage)',
 
