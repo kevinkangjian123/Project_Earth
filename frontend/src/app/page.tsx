@@ -42,6 +42,10 @@ export default function Dashboard() {
   const [spendXhs, setSpendXhs] = useState(15);
   const [discountJd, setDiscountJd] = useState(20);
   const [discountOff, setDiscountOff] = useState(10);
+  
+  const [pCompDy, setPCompDy] = useState(25);
+  const [pMacroGdp, setPMacroGdp] = useState(2.1);
+  const [pCatTmall, setPCatTmall] = useState(-4.5);
 
   const facts: Fact[] = [
     { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down' },
@@ -54,9 +58,9 @@ export default function Dashboard() {
     { id: 'm2', name: t.m_spend_xhs_name, type: 'active', value: spendXhs, unit: 'k', description: t.m_spend_xhs_desc },
     { id: 'm3', name: t.m_discount_jd_name, type: 'active', value: discountJd, unit: '%', description: t.m_discount_jd_desc },
     { id: 'm4', name: t.m_discount_off_name, type: 'active', value: discountOff, unit: '%', description: t.m_discount_off_desc },
-    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: +25, unit: '%', description: t.p_comp_dy_desc },
-    { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: +2.1, unit: '%', description: t.p_macro_gdp_desc },
-    { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: -4.5, unit: '%', description: t.p_cat_tmall_desc },
+    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: pCompDy, unit: '%', description: t.p_comp_dy_desc },
+    { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: pMacroGdp, unit: '%', description: t.p_macro_gdp_desc },
+    { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: pCatTmall, unit: '%', description: t.p_cat_tmall_desc },
   ];
 
   return (
@@ -95,6 +99,17 @@ export default function Dashboard() {
                 lang={lang}
                 onUploadSuccess={(data) => {
                   console.log("[UI] Received Facts from Engine:", data);
+                  // Dynamic Data Binding: Inject baseline metrics extracted by Python into React State
+                  if (data.initial_simulation_metrics) {
+                    const baselines = data.initial_simulation_metrics;
+                    if (baselines.spendDy !== undefined) setSpendDy(baselines.spendDy);
+                    if (baselines.spendXhs !== undefined) setSpendXhs(baselines.spendXhs);
+                    if (baselines.discountJd !== undefined) setDiscountJd(baselines.discountJd);
+                    if (baselines.discountOff !== undefined) setDiscountOff(baselines.discountOff);
+                    if (baselines.p_comp_dy !== undefined) setPCompDy(baselines.p_comp_dy);
+                    if (baselines.p_macro_gdp !== undefined) setPMacroGdp(baselines.p_macro_gdp);
+                    if (baselines.p_cat_tmall !== undefined) setPCatTmall(baselines.p_cat_tmall);
+                  }
                   setHasUploaded(true);
                 }} 
               />
