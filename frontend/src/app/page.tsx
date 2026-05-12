@@ -60,17 +60,40 @@ export default function Dashboard() {
   
   const [agentMessages, setAgentMessages] = useState<{role: 'user'|'agent', content: string}[]>([]);
   const [agentInput, setAgentInput] = useState('');
+  const [isAgentTyping, setIsAgentTyping] = useState(false);
 
-  const handleAgentSubmit = (e: React.FormEvent) => {
+  const handleAgentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agentInput.trim()) return;
+    if (!agentInput.trim() || isAgentTyping) return;
 
-    setAgentMessages(prev => [...prev, { role: 'user', content: agentInput }]);
+    const userMessage = agentInput;
+    setAgentMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setAgentInput('');
+    setIsAgentTyping(true);
 
-    setTimeout(() => {
-      setAgentMessages(prev => [...prev, { role: 'agent', content: lang === 'zh' ? '目前系统处于沙盘演示模式，外部实时数据网关已被锁定。您的查询指令已记录，将在正式环境联调时执行。' : 'System is currently in Simulation Demo mode. External real-time data gateways are locked. Your query has been logged for execution.' }]);
-    }, 1000);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          context: {
+            lang,
+            sliders: { spendDy, spendXhs, discountJd, discountOff, pCompDy, pMacroGdp, pCatTmall }
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.reply) {
+        setAgentMessages(prev => [...prev, { role: 'agent', content: data.reply }]);
+      } else {
+        setAgentMessages(prev => [...prev, { role: 'agent', content: lang === 'zh' ? `网络请求失败: ${data.error || '未知错误'}` : 'Network error.' }]);
+      }
+    } catch (err) {
+      setAgentMessages(prev => [...prev, { role: 'agent', content: lang === 'zh' ? '系统调度异常。' : 'System routing anomaly.' }]);
+    } finally {
+      setIsAgentTyping(false);
+    }
   };
 
   const chartAData = [
@@ -618,11 +641,24 @@ export default function Dashboard() {
                       <Bot className="w-3 h-3 text-white" />
                     </div>
                   )}
-                  <div className={`${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-50 border border-slate-100 text-slate-600'} p-3 rounded-lg text-xs leading-relaxed max-w-[85%]`}>
+                  <div className={`${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-50 border border-slate-100 text-slate-600'} p-3 rounded-lg text-xs leading-relaxed max-w-[85%] whitespace-pre-wrap`}>
                     {msg.content}
                   </div>
                 </div>
               ))}
+              
+              {isAgentTyping && (
+                <div className="flex items-start space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shrink-0 shadow-sm shadow-blue-600/20">
+                    <Bot className="w-3 h-3 text-white" />
+                  </div>
+                  <div className="bg-slate-50 border border-slate-100 p-3 rounded-lg flex items-center space-x-1 h-[38px]">
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="p-4 border-t border-slate-100 bg-white">
