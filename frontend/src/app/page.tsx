@@ -20,7 +20,7 @@ import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
 
 type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral'; lineage: string; businessValue: string; };
-type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string; isAnomaly?: boolean };
+type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string; isAnomaly?: boolean; lineage?: string };
 
 const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => (
   <div className="group relative inline-block">
@@ -76,9 +76,9 @@ export default function Dashboard() {
     { id: 'm2', name: t.m_spend_xhs_name, type: 'active', value: spendXhs, unit: 'k', description: t.m_spend_xhs_desc },
     { id: 'm3', name: t.m_discount_jd_name, type: 'active', value: discountJd, unit: '%', description: t.m_discount_jd_desc },
     { id: 'm4', name: t.m_discount_off_name, type: 'active', value: discountOff, unit: '%', description: t.m_discount_off_desc },
-    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: pCompDy, unit: '%', description: t.p_comp_dy_desc, isAnomaly: true },
-    { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: pMacroGdp, unit: '%', description: t.p_macro_gdp_desc },
-    { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: pCatTmall, unit: '%', description: t.p_cat_tmall_desc },
+    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: pCompDy, unit: '%', description: t.p_comp_dy_desc, isAnomaly: true, lineage: '蝉妈妈大盘' },
+    { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: pMacroGdp, unit: '%', description: t.p_macro_gdp_desc, lineage: '国家统计局 Q3' },
+    { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: pCatTmall, unit: '%', description: t.p_cat_tmall_desc, lineage: '生意参谋指数' },
   ];
 
   return (
@@ -309,7 +309,12 @@ export default function Dashboard() {
                     <div key={metric.id} className="bg-white/60 p-3 rounded-lg border border-slate-200/60 flex justify-between items-center backdrop-blur-sm">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
-                          <p className="text-xs font-medium text-slate-700">{metric.name}</p>
+                          <div className="flex items-center space-x-2">
+                            <p className="text-xs font-medium text-slate-700">{metric.name}</p>
+                            {metric.lineage && (
+                              <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200">{metric.lineage}</span>
+                            )}
+                          </div>
                           {metric.isAnomaly && (
                             <button 
                               onClick={() => setIsAgentOpen(true)}
