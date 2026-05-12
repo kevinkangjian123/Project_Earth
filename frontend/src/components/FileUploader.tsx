@@ -40,15 +40,36 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
         return;
       }
 
-      // 1. Initiate Upload (Raw Binary Stream to bypass Next.js memory limits)
+      // 1. Chunked Upload Architecture (Bypass Proxy Limits)
+      const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+        
+        let chunkRes;
+        try {
+          chunkRes = await fetch(`/api/upload-chunk?hash=${hash}&index=${i}&total=${totalChunks}`, {
+            method: 'POST',
+            body: chunk,
+            headers: {
+              'Content-Type': 'application/octet-stream'
+            }
+          });
+        } catch (fetchErr: any) {
+          throw new Error(`Chunk ${i} Network Error: ${fetchErr.message}`);
+        }
+
+        if (!chunkRes.ok) {
+          throw new Error(`Chunk ${i} Failed: HTTP ${chunkRes.status}`);
+        }
+      }
+
+      // 2. Trigger Analysis after all chunks are uploaded
       let uploadRes;
       try {
         uploadRes = await fetch(`/api/analyze?hash=${hash}`, {
-          method: 'POST',
-          body: file,
-          headers: {
-            'Content-Type': file.type || 'application/octet-stream'
-          }
+          method: 'POST'
         });
       } catch (fetchErr: any) {
         throw new Error(`Network Error: ${fetchErr.message}`);

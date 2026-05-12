@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import { mkdir } from 'fs/promises';
-import { createWriteStream, existsSync } from 'fs';
-import { pipeline } from 'stream/promises';
-import { Readable } from 'stream';
+import { existsSync } from 'fs';
 import { join } from 'path';
 import os from 'os';
 
@@ -11,27 +9,25 @@ export async function POST(req: NextRequest) {
   try {
     const fileHash = req.nextUrl.searchParams.get('hash');
 
-    if (!fileHash || !req.body) {
-      return NextResponse.json({ error: "No file stream or hash provided" }, { status: 400 });
+    if (!fileHash) {
+      return NextResponse.json({ error: "No hash provided" }, { status: 400 });
     }
 
-    // 1. Determine Storage Volume (Use Zeabur /data if available, otherwise OS /tmp)
+    // 1. Determine Storage Volume
     const baseStorageDir = existsSync('/data') ? '/data' : os.tmpdir();
     
-    // Ensure directories exist
-    const uploadsDir = join(baseStorageDir, 'mars_uploads');
+    // Ensure results directory exists
     const resultsDir = join(baseStorageDir, 'mars_results');
-    
-    if (!existsSync(uploadsDir)) await mkdir(uploadsDir, { recursive: true });
     if (!existsSync(resultsDir)) await mkdir(resultsDir, { recursive: true });
 
-    // 2. Stream file directly to disk (Bypasses Next.js RAM buffering, preventing OOM / ECONNRESET)
+    // 2. Verify assembled file exists
+    const uploadsDir = join(baseStorageDir, 'mars_uploads');
     const tempInputPath = join(uploadsDir, `${fileHash}.txt`);
     const tempOutputPath = join(resultsDir, `${fileHash}.json`);
     
-    const nodeStream = Readable.fromWeb(req.body as any);
-    const writeStream = createWriteStream(tempInputPath);
-    await pipeline(nodeStream, writeStream);
+    if (!existsSync(tempInputPath)) {
+      return NextResponse.json({ error: "Assembled file not found on server." }, { status: 400 });
+    }
     console.log(`[API Bridge] File saved to ${tempInputPath}.`);
 
     // 3. Asynchronous Execution (Decoupling)
