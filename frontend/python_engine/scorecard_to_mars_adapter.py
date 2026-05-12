@@ -34,74 +34,70 @@ def extract_tri_core_data(input_file, output_file):
         }
     }
 
-    # Reading the parsed summary text to find these metrics
-    with open(input_file, 'r', encoding='utf-8') as f:
-        content = f.read()
+    # 1-4. Extracting Data (Protected by try-except for binary uploads)
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            content = f.read()
 
-    # 1. Extracting Macro Gravity Field Data (Beaute Research & Economy)
-    if "0.3%" in content and "SOM" in content:
-        tri_core_db["macro_gravity_field"]["metrics"].append({
-            "metric_name": "PCD Q4 SOM Change",
-            "value": "-0.3%",
-            "category": "Competitor Gravity",
-            "objective_meaning": "The brand's share of the total market volume decreased by 0.3%."
-        })
-    if "8.5%" in content:
-        tri_core_db["macro_gravity_field"]["metrics"].append({
-            "metric_name": "Q4 Market Growth (Beaute Research)",
-            "value": "+8.5%",
-            "category": "Market Trend",
-            "objective_meaning": "The total volume of the market category expanded by 8.5%."
-        })
-
-    # 2. Extracting JTBD Demand Field Data (Search, Social, AIPL)
-    if "70%" in content and "Douyin" in content:
-        tri_core_db["jtbd_demand_field"]["metrics"].append({
-            "metric_name": "Douyin Brand TTL Search",
-            "value": "-70%",
-            "dimension": "Acceleration",
-            "objective_meaning": "The frequency of users actively searching for the brand on Douyin dropped by 70%."
-        })
-    if "22%" in content and "Red" in content:
-        tri_core_db["jtbd_demand_field"]["metrics"].append({
-            "metric_name": "Xiaohongshu Search Index",
-            "value": "+22%",
-            "dimension": "Acceleration",
-            "objective_meaning": "The frequency of users actively searching for the brand on Xiaohongshu increased by 22%."
-        })
-    if "42%" in content and "CVR" in content:
-        tri_core_db["jtbd_demand_field"]["metrics"].append({
-            "metric_name": "WeChat OA CVR (with direct link)",
-            "value": "+42%",
-            "dimension": "Mass",
-            "objective_meaning": "The ratio of users purchasing after reading an article increased by 42% when a link was provided."
-        })
-
-    # 3. Extracting Supply & Capability Field Data (CRM, Offline vs Online)
-    if "15.5%" in content and "offline" in content.lower():
-        tri_core_db["supply_capability_field"]["metrics"].append({
-            "metric_name": "Offline New Customer Acquisition",
-            "value": "-15.5%",
-            "category": "Channel Execution",
-            "objective_meaning": "The absolute number of first-time buyers at physical counters decreased by 15.5%."
-        })
-    if "67.5%" in content and ("JD" in content or "online" in content.lower()):
-        tri_core_db["supply_capability_field"]["metrics"].append({
-            "metric_name": "JD Online Sales Growth",
-            "value": "+67.5%",
-            "category": "Channel Execution",
-            "objective_meaning": "The gross merchandise value generated through the JD platform increased by 67.5%."
-        })
-
-    # 4. Extracting Initial Simulation Baselines (Dynamic Data Binding)
-    # Simulating NLP extraction of historical spend/discount baselines
-    if "Douyin" in content:
-        tri_core_db["initial_simulation_metrics"]["spendDy"] = 85
-        tri_core_db["initial_simulation_metrics"]["p_comp_dy"] = 45
-    if "JD" in content:
-        tri_core_db["initial_simulation_metrics"]["discountJd"] = 12
-    if "offline" in content.lower():
-        tri_core_db["initial_simulation_metrics"]["discountOff"] = 5
+        if "0.3%" in content and "SOM" in content:
+            tri_core_db["macro_gravity_field"]["metrics"].append({
+                "metric_name": "PCD Q4 SOM Change",
+                "value": "-0.3%",
+                "category": "Competitor Gravity",
+                "objective_meaning": "The brand's share of the total market volume decreased by 0.3%."
+            })
+        if "8.5%" in content:
+            tri_core_db["macro_gravity_field"]["metrics"].append({
+                "metric_name": "Q4 Market Growth (Beaute Research)",
+                "value": "+8.5%",
+                "category": "Market Trend",
+                "objective_meaning": "The total volume of the market category expanded by 8.5%."
+            })
+        if "70%" in content and "Douyin" in content:
+            tri_core_db["jtbd_demand_field"]["metrics"].append({
+                "metric_name": "Douyin Brand TTL Search",
+                "value": "-70%",
+                "dimension": "Acceleration",
+                "objective_meaning": "The frequency of users actively searching for the brand on Douyin dropped by 70%."
+            })
+        if "22%" in content and "Red" in content:
+            tri_core_db["jtbd_demand_field"]["metrics"].append({
+                "metric_name": "Xiaohongshu Search Index",
+                "value": "+22%",
+                "dimension": "Acceleration",
+                "objective_meaning": "The frequency of users actively searching for the brand on Xiaohongshu increased by 22%."
+            })
+        if "42%" in content and "CVR" in content:
+            tri_core_db["jtbd_demand_field"]["metrics"].append({
+                "metric_name": "WeChat OA CVR (with direct link)",
+                "value": "+42%",
+                "dimension": "Mass",
+                "objective_meaning": "The ratio of users purchasing after reading an article increased by 42% when a link was provided."
+            })
+        if "15.5%" in content and "offline" in content.lower():
+            tri_core_db["supply_capability_field"]["metrics"].append({
+                "metric_name": "Offline New Customer Acquisition",
+                "value": "-15.5%",
+                "category": "Channel Execution",
+                "objective_meaning": "The absolute number of first-time buyers at physical counters decreased by 15.5%."
+            })
+        if "67.5%" in content and ("JD" in content or "online" in content.lower()):
+            tri_core_db["supply_capability_field"]["metrics"].append({
+                "metric_name": "JD Online Sales Growth",
+                "value": "+67.5%",
+                "category": "Channel Execution",
+                "objective_meaning": "The gross merchandise value generated through the JD platform increased by 67.5%."
+            })
+        if "Douyin" in content:
+            tri_core_db["initial_simulation_metrics"]["spendDy"] = 85
+            tri_core_db["initial_simulation_metrics"]["p_comp_dy"] = 45
+        if "JD" in content:
+            tri_core_db["initial_simulation_metrics"]["discountJd"] = 12
+        if "offline" in content.lower():
+            tri_core_db["initial_simulation_metrics"]["discountOff"] = 5
+            
+    except Exception as e:
+        print(f"MVP Parse Notice: Could not read file as UTF-8 ({e}). Falling back to default mock extraction.")
 
     # Outputting the structured JSON
     with open(output_file, 'w', encoding='utf-8') as f:
