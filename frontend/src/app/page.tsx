@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   UploadCloud, 
@@ -112,13 +112,7 @@ export default function Dashboard() {
     { name: lang === 'zh' ? '净利润' : 'Net Profit', value: 20, fill: '#22c55e' },
   ];
 
-  const chartCData = [
-    { day: '-30d', baseline: 100, projected: 100 },
-    { day: '-15d', baseline: 80, projected: 80 },
-    { day: 'Today', baseline: 60, projected: 60 },
-    { day: '+15d', baseline: 40, projected: 75 },
-    { day: '+30d', baseline: 20, projected: 95 },
-  ];
+
   
   const chartDData = [
     { month: 'Jan', cac: 15, ltv: 80 },
@@ -143,6 +137,64 @@ export default function Dashboard() {
   const [pCompDy, setPCompDy] = useState(25);
   const [pMacroGdp, setPMacroGdp] = useState(2.1);
   const [pCatTmall, setPCatTmall] = useState(-4.5);
+
+  const simEngine = useMemo(() => {
+    const baseGmv = 10.0;
+    const baseRoi = 1.80;
+
+    // 1. Calculate GMV Impacts (in Millions)
+    const dyGmv = (spendDy / 10) * 0.2;
+    const xhsGmv = (spendXhs / 10) * 0.15;
+    const jdGmv = (discountJd / 10) * 0.4;
+    const offGmv = (discountOff / 10) * 0.2;
+    const compGmv = (pCompDy / 10) * -0.1;
+    const macroGmv = (pMacroGdp - 4.5) * 0.3;
+    const tmallGmv = (pCatTmall / 10) * 0.2;
+
+    const finalGmv = baseGmv + dyGmv + xhsGmv + jdGmv + offGmv + compGmv + macroGmv + tmallGmv;
+    const deltaGmv = finalGmv - baseGmv;
+
+    // 2. Calculate ROI Impacts
+    const dyRoi = (spendDy / 10) * -0.05;
+    const xhsRoi = (spendXhs / 10) * 0.08;
+    const jdRoi = (discountJd / 10) * -0.25; 
+    const offRoi = (discountOff / 10) * -0.15;
+
+    const finalRoi = baseRoi + dyRoi + xhsRoi + jdRoi + offRoi;
+
+    // 3. Risk Assessment Engine
+    let riskEn = 'Balanced / Low Risk';
+    let riskZh = '平稳过渡 / 风险可控';
+    if (discountJd > 10 && discountOff < -10) {
+      riskEn = 'Severe Omnichannel Conflict'; riskZh = '全渠道严重价格倒挂';
+    } else if (spendDy > 20) {
+      riskEn = 'CAC Runaway Risk'; riskZh = '获客成本失控风险';
+    } else if (discountJd < -20) {
+      riskEn = 'Short-term GMV Shock'; riskZh = '短期销量阵痛期';
+    }
+
+    // 4. Projection Chart Scaling
+    const endPoint = Math.max(0, 20 + (deltaGmv * 25));
+    const midPoint = Math.max(0, 40 + (deltaGmv * 15));
+    
+    const chart = [
+      { day: '-30d', baseline: 100, projected: 100 },
+      { day: '-15d', baseline: 80, projected: 80 },
+      { day: 'Today', baseline: 60, projected: 60 },
+      { day: '+15d', baseline: 40, projected: Math.round(midPoint) },
+      { day: '+30d', baseline: 20, projected: Math.round(endPoint) },
+    ];
+
+    return {
+      deltaGmvStr: deltaGmv >= 0 ? `+$${deltaGmv.toFixed(1)}M` : `-$${Math.abs(deltaGmv).toFixed(1)}M`,
+      isGmvPositive: deltaGmv >= 0,
+      baseRoiStr: baseRoi.toFixed(2),
+      finalRoiStr: Math.max(0, finalRoi).toFixed(2),
+      isRoiPositive: finalRoi >= baseRoi,
+      risk: lang === 'zh' ? riskZh : riskEn,
+      chart
+    };
+  }, [spendDy, spendXhs, discountJd, discountOff, pCompDy, pMacroGdp, pCatTmall, lang]);
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [hasSimulated, setHasSimulated] = useState(false);
@@ -544,7 +596,7 @@ export default function Dashboard() {
 
                   <div className="h-48 w-full mb-6 bg-slate-50 border border-slate-100 rounded-lg p-3">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartCData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                      <AreaChart data={simEngine.chart} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorBaseline" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
@@ -565,18 +617,18 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                     <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                        <p className="text-xs text-green-700 font-medium">{t.simMetricGMV}</p>
-                        <p className="text-2xl font-bold text-green-800 mt-1">+12.4%</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                     <div className={`${simEngine.isGmvPositive ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-red-50 border-red-100 text-red-800'} border rounded-xl p-4 transition-colors duration-500`}>
+                        <p className={`text-xs font-medium ${simEngine.isGmvPositive ? 'text-emerald-700' : 'text-red-700'}`}>{t.simMetricGMV}</p>
+                        <p className="text-2xl font-bold mt-1">{simEngine.deltaGmvStr}</p>
                      </div>
-                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <p className="text-xs text-blue-700 font-medium">{t.simMetricROI}</p>
-                        <p className="text-2xl font-bold text-blue-800 mt-1">1.8 <span className="text-blue-400 mx-1">→</span> 2.1</p>
+                     <div className={`${simEngine.isRoiPositive ? 'bg-blue-50 border-blue-100 text-blue-800' : 'bg-red-50 border-red-100 text-red-800'} border rounded-xl p-4 transition-colors duration-500`}>
+                        <p className={`text-xs font-medium ${simEngine.isRoiPositive ? 'text-blue-700' : 'text-red-700'}`}>{t.simMetricROI}</p>
+                        <p className="text-2xl font-bold mt-1">{simEngine.baseRoiStr} <span className={`${simEngine.isRoiPositive ? 'text-blue-400' : 'text-red-400'} mx-1`}>→</span> {simEngine.finalRoiStr}</p>
                      </div>
-                     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
+                     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 transition-colors duration-500">
                         <p className="text-xs text-orange-700 font-medium">{t.simMetricRisk}</p>
-                        <p className="text-sm font-bold text-orange-800 mt-1">{lang === 'en' ? 'Offline Channel Conflict' : '线下渠道串货抗议'}</p>
+                        <p className="text-sm font-bold text-orange-800 mt-1">{simEngine.risk}</p>
                      </div>
                   </div>
 
