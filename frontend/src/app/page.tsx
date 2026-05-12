@@ -13,7 +13,8 @@ import {
   Info,
   CheckCircle2,
   AlertTriangle,
-  Globe
+  Globe,
+  Send
 } from "lucide-react";
 import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
@@ -420,11 +421,19 @@ export default function Dashboard() {
             </div>
             
             <div className="p-4 border-t border-slate-100 bg-white">
-              <input 
-                type="text" 
-                placeholder={t.agentInputPlaceholder}
-                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-500 transition-all"
-              />
+              <form className="relative flex items-center" onSubmit={(e) => e.preventDefault()}>
+                <input 
+                  type="text" 
+                  placeholder={t.agentInputPlaceholder}
+                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-4 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-500 transition-all"
+                />
+                <button 
+                  type="submit" 
+                  className="absolute right-2 p-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
             </div>
           </motion.aside>
         )}
