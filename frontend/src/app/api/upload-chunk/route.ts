@@ -28,13 +28,15 @@ export async function POST(req: NextRequest) {
 
     const tempInputPath = join(uploadsDir, `${fileHash}.txt`);
     
+    // Read the 512KB chunk entirely into memory (bypassing fragile stream piping)
+    const arrayBuffer = await req.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
     // If it's the very first chunk, overwrite any existing file from a failed previous attempt
     const writeFlags = chunkIndex === '0' ? 'w' : 'a';
     
-    const nodeStream = Readable.fromWeb(req.body as any);
-    const writeStream = createWriteStream(tempInputPath, { flags: writeFlags });
-    
-    await pipeline(nodeStream, writeStream);
+    const { writeFile } = require('fs/promises');
+    await writeFile(tempInputPath, buffer, { flag: writeFlags });
 
     return NextResponse.json({ 
       success: true, 
