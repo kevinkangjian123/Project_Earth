@@ -39,6 +39,21 @@ export default function Dashboard() {
   const [hasUploaded, setHasUploaded] = useState(false);
   const [isAgentOpen, setIsAgentOpen] = useState(false);
   
+  const [agentMessages, setAgentMessages] = useState<{role: 'user'|'agent', content: string}[]>([]);
+  const [agentInput, setAgentInput] = useState('');
+
+  const handleAgentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agentInput.trim()) return;
+
+    setAgentMessages(prev => [...prev, { role: 'user', content: agentInput }]);
+    setAgentInput('');
+
+    setTimeout(() => {
+      setAgentMessages(prev => [...prev, { role: 'agent', content: lang === 'zh' ? '目前系统处于沙盘演示模式，外部实时数据网关已被锁定。您的查询指令已记录，将在正式环境联调时执行。' : 'System is currently in Simulation Demo mode. External real-time data gateways are locked. Your query has been logged for execution.' }]);
+    }, 1000);
+  };
+  
   const [spendDy, setSpendDy] = useState(0);
   const [spendXhs, setSpendXhs] = useState(0);
   const [discountJd, setDiscountJd] = useState(0);
@@ -445,12 +460,31 @@ export default function Dashboard() {
                 <div className="absolute -left-1 top-4 w-2 h-2 rounded-full bg-blue-500" />
                 <span dangerouslySetInnerHTML={{ __html: t.agentGreeting.replace('${spendDy}', spendDy.toString()) }} />
               </div>
+              
+              {agentMessages.map((msg, i) => (
+                <div key={i} className={`flex items-start space-x-2 ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                  {msg.role === 'user' ? (
+                    <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] text-white">U</span>
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shrink-0 shadow-sm shadow-blue-600/20">
+                      <Bot className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                  <div className={`${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-50 border border-slate-100 text-slate-600'} p-3 rounded-lg text-xs leading-relaxed max-w-[85%]`}>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
             </div>
             
             <div className="p-4 border-t border-slate-100 bg-white">
-              <form className="relative flex items-center" onSubmit={(e) => e.preventDefault()}>
+              <form className="relative flex items-center" onSubmit={handleAgentSubmit}>
                 <input 
                   type="text" 
+                  value={agentInput}
+                  onChange={(e) => setAgentInput(e.target.value)}
                   placeholder={t.agentInputPlaceholder}
                   className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-4 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-500 transition-all"
                 />
