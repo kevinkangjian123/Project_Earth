@@ -216,11 +216,12 @@ export default function Dashboard() {
     }, 2000);
   };
 
-  const facts: Fact[] = [
+  const [facts, setFacts] = useState<Fact[]>([
     { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down', lineage: '[1] 财报行45', businessValue: '核心营收大盘，下降意味着市场份额被蚕食' },
     { id: '2', label: 'CAC', value: '$45.20', trend: 'up', lineage: '[2] 星图抓取', businessValue: '获客成本剧增，反映平台流量红利触顶' },
     { id: '3', label: 'Retention', value: '42%', trend: 'neutral', lineage: '[3] CRM系统', businessValue: '留存率停滞，线下专柜体验护城河正在失效' },
-  ];
+  ]);
+
 
   const metrics: Metric[] = [
     { id: 'm1', name: t.m_spend_dy_name, type: 'active', value: spendDy, unit: 'k', description: t.m_spend_dy_desc },
@@ -288,6 +289,35 @@ export default function Dashboard() {
                     if (baselines.p_macro_gdp !== undefined) setPMacroGdp(baselines.p_macro_gdp);
                     if (baselines.p_cat_tmall !== undefined) setPCatTmall(baselines.p_cat_tmall);
                   }
+                  // Dynamic Facts Binding
+                  let newFacts: Fact[] = [];
+                  const processMetrics = (fieldData: any) => {
+                     if (fieldData && fieldData.metrics) {
+                        fieldData.metrics.forEach((m: any) => {
+                           let trend: 'up' | 'down' | 'neutral' = 'neutral';
+                           if (m.value.startsWith('-')) trend = 'down';
+                           if (m.value.startsWith('+')) trend = 'up';
+                           
+                           newFacts.push({
+                              id: Math.random().toString(),
+                              label: m.metric_name,
+                              value: m.value,
+                              trend,
+                              lineage: `[Source] ${m.category || m.dimension || 'System'}`,
+                              businessValue: m.objective_meaning
+                           });
+                        });
+                     }
+                  };
+                  
+                  processMetrics(data.macro_gravity_field);
+                  processMetrics(data.jtbd_demand_field);
+                  processMetrics(data.supply_capability_field);
+                  
+                  if (newFacts.length > 0) {
+                     setFacts(newFacts);
+                  }
+
                   setHasUploaded(true);
                 }} 
               />
