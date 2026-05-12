@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
+import { mkdir } from 'fs/promises';
+import { createWriteStream, existsSync } from 'fs';
+import { pipeline } from 'stream/promises';
+import { Readable } from 'stream';
 import { join } from 'path';
 import os from 'os';
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const fileHash = formData.get('hash') as string;
+    const fileHash = req.nextUrl.searchParams.get('hash');
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    if (!fileHash || !req.body) {
+      return NextResponse.json({ error: "No file stream or hash provided" }, { status: 400 });
     }
 
     // 1. Determine Storage Volume (Use Zeabur /data if available, otherwise OS /tmp)
@@ -25,12 +25,13 @@ export async function POST(req: NextRequest) {
     if (!existsSync(uploadsDir)) await mkdir(uploadsDir, { recursive: true });
     if (!existsSync(resultsDir)) await mkdir(resultsDir, { recursive: true });
 
-    // 2. Stream file to disk (For MVP, we use arrayBuffer bufferization. The RAM spike is brief.)
-    const buffer = Buffer.from(await file.arrayBuffer());
+    // 2. Stream file directly to disk (Bypasses Next.js RAM buffering, preventing OOM / ECONNRESET)
     const tempInputPath = join(uploadsDir, `${fileHash}.txt`);
     const tempOutputPath = join(resultsDir, `${fileHash}.json`);
     
-    await writeFile(tempInputPath, buffer);
+    const nodeStream = Readable.fromWeb(req.body as any);
+    const writeStream = createWriteStream(tempInputPath);
+    await pipeline(nodeStream, writeStream);
     console.log(`[API Bridge] File saved to ${tempInputPath}.`);
 
     // 3. Asynchronous Execution (Decoupling)

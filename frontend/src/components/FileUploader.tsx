@@ -40,16 +40,15 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('hash', hash);
-
-      // 1. Initiate Upload (Async Decoupling)
+      // 1. Initiate Upload (Raw Binary Stream to bypass Next.js memory limits)
       let uploadRes;
       try {
-        uploadRes = await fetch('/api/analyze', {
+        uploadRes = await fetch(`/api/analyze?hash=${hash}`, {
           method: 'POST',
-          body: formData
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream'
+          }
         });
       } catch (fetchErr: any) {
         throw new Error(`Network Error: ${fetchErr.message}`);
