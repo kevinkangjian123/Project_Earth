@@ -13,8 +13,11 @@ export async function POST(req: NextRequest) {
     const totalChunks = req.nextUrl.searchParams.get('total');
 
     if (!fileHash || !chunkIndex || !totalChunks || !req.body) {
+      console.error(`[API Bridge] Chunk Error: Missing parameters`, { fileHash, chunkIndex, totalChunks, hasBody: !!req.body });
       return NextResponse.json({ error: "Missing required chunk parameters or body" }, { status: 400 });
     }
+
+    console.log(`[API Bridge] Receiving chunk ${chunkIndex}/${totalChunks} for hash ${fileHash}...`);
 
     const baseStorageDir = existsSync('/data') ? '/data' : os.tmpdir();
     const uploadsDir = join(baseStorageDir, 'mars_uploads');

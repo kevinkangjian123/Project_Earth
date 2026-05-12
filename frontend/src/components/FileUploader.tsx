@@ -41,14 +41,18 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
       }
 
       // 1. Chunked Upload Architecture (Bypass Proxy Limits)
-      const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+      // REDUCED TO 512KB: Many cloud proxies (Nginx/Caddy) have a hard 1MB default limit.
+      const CHUNK_SIZE = 512 * 1024; // 512KB chunks
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+      console.log(`[Upload] Starting chunked upload. Total chunks: ${totalChunks}`);
 
       for (let i = 0; i < totalChunks; i++) {
         const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
         
         let chunkRes;
         try {
+          console.log(`[Upload] Sending chunk ${i+1}/${totalChunks}...`);
           chunkRes = await fetch(`/api/upload-chunk?hash=${hash}&index=${i}&total=${totalChunks}`, {
             method: 'POST',
             body: chunk,
@@ -57,6 +61,7 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
             }
           });
         } catch (fetchErr: any) {
+          console.error(`[Upload] Chunk ${i} failed. Error:`, fetchErr);
           throw new Error(`Chunk ${i} Network Error: ${fetchErr.message}`);
         }
 
