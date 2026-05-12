@@ -15,10 +15,27 @@ import {
   AlertTriangle,
   Globe,
   Send,
-  Lightbulb
+  Lightbulb,
+  Download,
+  Loader2
 } from "lucide-react";
 import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
+import { 
+  ComposedChart, 
+  BarChart,
+  Line, 
+  Bar, 
+  Cell,
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  Legend, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 
 type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral'; lineage: string; businessValue: string; };
 type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string; isAnomaly?: boolean; lineage?: string };
@@ -54,6 +71,30 @@ export default function Dashboard() {
       setAgentMessages(prev => [...prev, { role: 'agent', content: lang === 'zh' ? '目前系统处于沙盘演示模式，外部实时数据网关已被锁定。您的查询指令已记录，将在正式环境联调时执行。' : 'System is currently in Simulation Demo mode. External real-time data gateways are locked. Your query has been logged for execution.' }]);
     }, 1000);
   };
+
+  const chartAData = [
+    { month: 'Jan', onlineDiscount: 5, offlineRetention: 65 },
+    { month: 'Feb', onlineDiscount: 8, offlineRetention: 62 },
+    { month: 'Mar', onlineDiscount: 10, offlineRetention: 58 },
+    { month: 'Apr', onlineDiscount: 18, offlineRetention: 45 },
+    { month: 'May', onlineDiscount: 25, offlineRetention: 30 },
+    { month: 'Jun', onlineDiscount: 35, offlineRetention: 18 },
+  ];
+
+  const chartBData = [
+    { name: lang === 'zh' ? '总营收' : 'Gross Rev', value: 100, fill: '#94a3b8' },
+    { name: lang === 'zh' ? '折扣损耗' : 'Discount', value: -35, fill: '#ef4444' },
+    { name: lang === 'zh' ? '流量成本' : 'CAC', value: -45, fill: '#f97316' },
+    { name: lang === 'zh' ? '净利润' : 'Net Profit', value: 20, fill: '#22c55e' },
+  ];
+
+  const chartCData = [
+    { day: '-30d', baseline: 100, projected: 100 },
+    { day: '-15d', baseline: 80, projected: 80 },
+    { day: 'Today', baseline: 60, projected: 60 },
+    { day: '+15d', baseline: 40, projected: 75 },
+    { day: '+30d', baseline: 20, projected: 95 },
+  ];
   
   const [spendDy, setSpendDy] = useState(0);
   const [spendXhs, setSpendXhs] = useState(0);
@@ -79,6 +120,15 @@ export default function Dashboard() {
       setIsSimulating(false);
       setHasSimulated(true);
     }, 1500);
+  };
+
+  const [isExporting, setIsExporting] = useState(false);
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      alert(lang === 'zh' ? '✅ 董事会汇报 PDF 已生成并下载。' : '✅ Board Deck PDF successfully generated and downloaded.');
+    }, 2000);
   };
 
   const facts: Fact[] = [
@@ -108,8 +158,17 @@ export default function Dashboard() {
               <h1 className="text-3xl font-light tracking-tight text-slate-900">{t.headerTitle}</h1>
               <p className="text-slate-500 mt-2 text-sm">{t.headerSubtitle}</p>
             </div>
-            <div className="flex space-x-6 text-sm text-slate-500 items-center">
+            <div className="flex space-x-4 text-sm text-slate-500 items-center">
               
+              <button 
+                onClick={handleExport}
+                disabled={isExporting}
+                className="flex items-center space-x-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50"
+              >
+                {isExporting ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Download className="w-4 h-4 mr-1" />}
+                <span>{isExporting ? (lang === 'en' ? 'Compiling...' : '正在生成...') : (lang === 'en' ? 'Export PDF' : '导出汇报 PDF')}</span>
+              </button>
+
               <button 
                 onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
                 className="flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors text-slate-700 font-medium border border-slate-200"
@@ -206,13 +265,45 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Activity className="w-4 h-4 mr-2 text-blue-500" /> {t.reportAnalysisTitle}</h4>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {t.reportAnalysisPoints.map((point: any, idx: number) => (
-                      <div key={idx} className="space-y-1">
-                        <h5 className="text-xs font-bold text-slate-800">{idx + 1}. {point.title}</h5>
+                      <div key={idx} className="space-y-2">
+                        <h5 className="text-sm font-bold text-slate-800">{point.title}</h5>
                         <p className="text-slate-600 text-xs leading-relaxed">
                           {point.desc}
                         </p>
+                        {idx === 0 && (
+                          <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={chartBData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                <Bar dataKey="value" radius={[4, 4, 4, 4]}>
+                                  {chartBData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        )}
+                        {idx === 1 && (
+                          <div className="h-40 w-full mt-4 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <ComposedChart data={chartAData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#ef4444' }} />
+                                <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#3b82f6' }} />
+                                <RechartsTooltip contentStyle={{ borderRadius: '8px', fontSize: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                <Bar yAxisId="left" dataKey="onlineDiscount" name={lang === 'zh' ? '线上折扣(%)' : 'Discount(%)'} fill="#fecaca" radius={[2, 2, 0, 0]} />
+                                <Line yAxisId="right" type="monotone" dataKey="offlineRetention" name={lang === 'zh' ? '线下复购(%)' : 'Retention(%)'} stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
+                              </ComposedChart>
+                            </ResponsiveContainer>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -408,9 +499,32 @@ export default function Dashboard() {
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mt-8 space-y-6 overflow-hidden"
                 >
-                  <div className="flex items-center space-x-2 text-slate-800 font-semibold border-b border-slate-200 pb-2">
+                  <div className="flex items-center space-x-2 text-slate-800 font-semibold border-b border-slate-200 pb-2 mb-4">
                     <Activity className="w-5 h-5 text-blue-600" />
                     <h3>{t.simOutcomeTitle}</h3>
+                  </div>
+
+                  <div className="h-48 w-full mb-6 bg-slate-50 border border-slate-100 rounded-lg p-3">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartCData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorBaseline" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                          </linearGradient>
+                          <linearGradient id="colorProjected" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                        <RechartsTooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', fontSize: '12px', border: '1px solid #e2e8f0' }} />
+                        <Area type="monotone" dataKey="baseline" name={lang === 'zh' ? '历史下降趋势' : 'Historical Decay'} stroke="#ef4444" fillOpacity={1} fill="url(#colorBaseline)" />
+                        <Area type="monotone" dataKey="projected" name={lang === 'zh' ? '策略修复投影' : 'Projected Recovery'} stroke="#3b82f6" strokeDasharray="5 5" fillOpacity={1} fill="url(#colorProjected)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
