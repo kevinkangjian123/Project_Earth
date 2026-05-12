@@ -38,8 +38,10 @@ export default function Dashboard() {
   const [hasUploaded, setHasUploaded] = useState(false);
   const [isAgentOpen, setIsAgentOpen] = useState(false);
   
-  const [marketingSpend, setMarketingSpend] = useState(50);
-  const [discountRate, setDiscountRate] = useState(15);
+  const [spendDy, setSpendDy] = useState(30);
+  const [spendXhs, setSpendXhs] = useState(15);
+  const [discountJd, setDiscountJd] = useState(20);
+  const [discountOff, setDiscountOff] = useState(10);
 
   const facts: Fact[] = [
     { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down' },
@@ -48,10 +50,13 @@ export default function Dashboard() {
   ];
 
   const metrics: Metric[] = [
-    { id: 'm1', name: t.m1_name, type: 'active', value: marketingSpend, unit: 'k', description: t.m1_desc },
-    { id: 'm2', name: t.m2_name, type: 'active', value: discountRate, unit: '%', description: t.m2_desc },
-    { id: 'm3', name: t.m3_name, type: 'passive', value: 2.1, unit: '%', description: t.m3_desc },
-    { id: 'm4', name: t.m4_name, type: 'passive', value: +15, unit: '%', description: t.m4_desc },
+    { id: 'm1', name: t.m_spend_dy_name, type: 'active', value: spendDy, unit: 'k', description: t.m_spend_dy_desc },
+    { id: 'm2', name: t.m_spend_xhs_name, type: 'active', value: spendXhs, unit: 'k', description: t.m_spend_xhs_desc },
+    { id: 'm3', name: t.m_discount_jd_name, type: 'active', value: discountJd, unit: '%', description: t.m_discount_jd_desc },
+    { id: 'm4', name: t.m_discount_off_name, type: 'active', value: discountOff, unit: '%', description: t.m_discount_off_desc },
+    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: +25, unit: '%', description: t.p_comp_dy_desc },
+    { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: +2.1, unit: '%', description: t.p_macro_gdp_desc },
+    { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: -4.5, unit: '%', description: t.p_cat_tmall_desc },
   ];
 
   return (
@@ -151,27 +156,55 @@ export default function Dashboard() {
                   <span className="text-xs font-normal text-slate-400">{t.controllable}</span>
                 </h3>
                 
-                <div className="space-y-5">
+                <div className="space-y-6">
+                  {/* Douyin Spend */}
                   <div>
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-600 font-medium">{t.m1_name}</span>
-                      <span className="text-blue-600 font-semibold">${marketingSpend}k</span>
+                      <span className="text-slate-600 font-medium">{t.m_spend_dy_name}</span>
+                      <span className="text-blue-600 font-semibold">${spendDy}k</span>
                     </div>
                     <input 
-                      type="range" min="10" max="100" 
-                      value={marketingSpend} onChange={(e) => setMarketingSpend(Number(e.target.value))}
+                      type="range" min="0" max="100" 
+                      value={spendDy} onChange={(e) => setSpendDy(Number(e.target.value))}
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
+                    />
+                  </div>
+
+                  {/* XHS Spend */}
+                  <div>
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-slate-600 font-medium">{t.m_spend_xhs_name}</span>
+                      <span className="text-blue-600 font-semibold">${spendXhs}k</span>
+                    </div>
+                    <input 
+                      type="range" min="0" max="100" 
+                      value={spendXhs} onChange={(e) => setSpendXhs(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
                   </div>
                   
+                  {/* JD Discount */}
                   <div>
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-600 font-medium">{t.m2_name}</span>
-                      <span className="text-blue-600 font-semibold">{discountRate}%</span>
+                      <span className="text-slate-600 font-medium">{t.m_discount_jd_name}</span>
+                      <span className="text-blue-600 font-semibold">{discountJd}%</span>
                     </div>
                     <input 
                       type="range" min="0" max="40" 
-                      value={discountRate} onChange={(e) => setDiscountRate(Number(e.target.value))}
+                      value={discountJd} onChange={(e) => setDiscountJd(Number(e.target.value))}
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
+                    />
+                  </div>
+
+                  {/* Offline Discount */}
+                  <div>
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-slate-600 font-medium">{t.m_discount_off_name}</span>
+                      <span className="text-blue-600 font-semibold">{discountOff}%</span>
+                    </div>
+                    <input 
+                      type="range" min="0" max="40" 
+                      value={discountOff} onChange={(e) => setDiscountOff(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
                   </div>
@@ -209,7 +242,7 @@ export default function Dashboard() {
               <div>
                 <h4 className="text-sm font-medium">{t.projectedOutcome}</h4>
                 <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  {t.projectedDesc.replace('{marketingSpend}', marketingSpend.toString()).replace('{discountRate}', discountRate.toString()).replace('{gdp}', metrics.find(m => m.id === 'm3')?.value.toString() || '0')}
+                  {t.projectedDesc.replace('{spendDy}', spendDy.toString()).replace('{discountJd}', discountJd.toString()).replace('{gdp}', metrics.find(m => m.id === 'p2')?.value.toString() || '0')}
                 </p>
               </div>
             </div>
@@ -248,7 +281,7 @@ export default function Dashboard() {
             <div className="flex-1 p-5 overflow-y-auto space-y-4">
               <div className="bg-slate-50 border border-slate-100 rounded-lg p-3 text-xs text-slate-600 leading-relaxed relative">
                 <div className="absolute -left-1 top-4 w-2 h-2 rounded-full bg-blue-500" />
-                <span dangerouslySetInnerHTML={{ __html: t.agentGreeting.replace('${marketingSpend}', marketingSpend.toString()) }} />
+                <span dangerouslySetInnerHTML={{ __html: t.agentGreeting.replace('${spendDy}', spendDy.toString()) }} />
               </div>
             </div>
             

@@ -44,34 +44,58 @@ export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
       formData.append('file', file);
       formData.append('hash', hash);
 
-      // Add a slight timeout safeguard for fetch
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
-
-      let response;
+      // 1. Initiate Upload (Async Decoupling)
+      let uploadRes;
       try {
-        response = await fetch('/api/analyze', {
+        uploadRes = await fetch('/api/analyze', {
           method: 'POST',
-          body: formData,
-          signal: controller.signal
+          body: formData
         });
-        clearTimeout(timeoutId);
       } catch (fetchErr: any) {
-        clearTimeout(timeoutId);
-        if (fetchErr.name === 'AbortError') {
-          throw new Error(lang === 'zh' ? "服务器响应超时 (60s)" : "Server Response Timeout (60s)");
+        throw new Error(`Network Error: ${fetchErr.message}`);
+      }
+
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        throw new Error(`HTTP ${uploadRes.status}: ${errText}`);
+      }
+
+      const initResult = await uploadRes.json();
+      if (!initResult.taskId) {
+        throw new Error(lang === 'zh' ? "服务器未返回任务ID" : "No Task ID returned from server.");
+      }
+
+      const taskId = initResult.taskId;
+      let isComplete = false;
+      let attempts = 0;
+      const maxAttempts = 100; // 5 minutes max (100 * 3s)
+
+      // 2. Poll for Status
+      while (!isComplete && attempts < maxAttempts) {
+        await new Promise(r => setTimeout(r, 3000));
+        
+        const statusRes = await fetch(`/api/status?taskId=${taskId}`);
+        if (!statusRes.ok) {
+          throw new Error("Failed to check task status.");
         }
-        throw new Error(`Network/Proxy Error (Zeabur Caddy might be blocking large files or connection dropped): ${fetchErr.message}`);
+
+        const statusData = await statusRes.json();
+        
+        if (statusData.status === 'complete') {
+          sessionStorage.setItem(`mars_fact_${hash}`, JSON.stringify(statusData.facts));
+          onUploadSuccess(statusData.facts);
+          isComplete = true;
+          break;
+        } else if (statusData.error) {
+          throw new Error(statusData.error);
+        }
+
+        attempts++;
       }
 
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errText}`);
+      if (!isComplete) {
+        throw new Error(lang === 'zh' ? "后台计算超时 (超过5分钟)" : "Background processing timeout (exceeded 5 mins)");
       }
-
-      const result = await response.json();
-      sessionStorage.setItem(`mars_fact_${hash}`, JSON.stringify(result));
-      onUploadSuccess(result);
 
     } catch (err: any) {
       console.error("Upload Error:", err);
