@@ -185,18 +185,40 @@ export default function Dashboard() {
               
               {/* Deep Analysis & Citations */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Activity className="w-4 h-4 mr-2 text-blue-500" /> {t.reportAnalysisTitle}</h4>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    {t.reportAnalysisBody}
-                  </p>
+                  <div className="space-y-4">
+                    {t.reportAnalysisPoints.map((point: any, idx: number) => (
+                      <div key={idx} className="space-y-1">
+                        <h5 className="text-xs font-bold text-slate-800">{idx + 1}. {point.title}</h5>
+                        <p className="text-slate-600 text-xs leading-relaxed">
+                          {point.desc}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-slate-800 flex items-center"><Info className="w-4 h-4 mr-2 text-purple-500" /> {t.reportSourcesTitle}</h4>
-                  <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4">
-                    <li><span className="text-blue-500 hover:underline cursor-pointer">[1]</span> Beaute Research Q4 Report (Verified)</li>
-                    <li><span className="text-blue-500 hover:underline cursor-pointer">[2]</span> Scorecard: JD Promotional Data (Row 45)</li>
-                    <li><span className="text-blue-500 hover:underline cursor-pointer">[3]</span> Scorecard: Offline CRM Export (Row 112)</li>
+                  <ul className="text-xs text-slate-500 space-y-2 list-none">
+                    <li>
+                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
+                        <span className="text-blue-500 mr-2 shrink-0">[1]</span>
+                        <span className="group-hover:underline">Beaute Research Q4 Report (Verified)</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
+                        <span className="text-blue-500 mr-2 shrink-0">[2]</span>
+                        <span className="group-hover:underline">Scorecard: JD Promotional Data (Row 45)</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setIsAgentOpen(true)} className="text-left hover:text-blue-600 transition-colors group flex items-start">
+                        <span className="text-blue-500 mr-2 shrink-0">[3]</span>
+                        <span className="group-hover:underline">Scorecard: Offline CRM Export (Row 112)</span>
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>

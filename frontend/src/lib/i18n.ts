@@ -18,7 +18,16 @@ export const dict = {
     reportAbstractTitle: 'Executive Summary',
     reportAbstractBody: 'Profitability decay is not driven by external macroeconomic fluctuations, but rather by an internal structural collapse. An over-allocation of traffic to high-discount channels, coupled with a sharp 40% decline in offline retention over the last 60 days, has created an unsustainable CAC-to-LTV ratio.',
     reportAnalysisTitle: 'Attribution Analysis',
-    reportAnalysisBody: 'Cross-referencing CRM retention data [1] with Media Spend logs reveals a critical anomaly: as eCommerce promotional spend increased by 15% in Q3 [2], the physical counter acquisition efficiency dropped by an equivalent margin. This indicates severe internal channel cannibalization, where price-sensitive customers are migrating across internal channels rather than representing net-new market share growth. Furthermore, Douyin top-of-funnel impression share has hit a ceiling [3], making broad-audience acquisition economically unviable.',
+    reportAnalysisPoints: [
+      {
+        title: 'Omni-channel Cannibalization',
+        desc: 'Cross-referencing CRM retention data [1] with Media Spend logs reveals a critical anomaly: as eCommerce promotional spend increased by 15% in Q3 [2], the physical counter acquisition efficiency dropped by an equivalent margin. Price-sensitive customers are migrating across internal channels rather than representing net-new market share growth.'
+      },
+      {
+        title: 'Top-of-Funnel CAC Ceiling',
+        desc: 'Douyin top-of-funnel impression share has hit a ceiling [3]. The traditional broad-audience acquisition strategy is economically unviable, leading to a structural break in the conversion funnel.'
+      }
+    ],
     reportEvidenceTitle: 'Data Evidence',
     reportSourcesTitle: 'External Lineage',
 
@@ -76,7 +85,16 @@ export const dict = {
     reportAbstractTitle: '核心摘要 (Executive Summary)',
     reportAbstractBody: '当前的利润流失并非由外部宏观大盘波动主导，而是源于严重的内部结构性崩塌。全渠道营销预算过度向高折扣电商平台倾斜，叠加线下专柜近 60 天内高达 40% 的复购率骤降，导致整体 CAC (获客成本) 与 LTV (生命周期价值) 倒挂，业务模型已处于不可持续的危险边缘。',
     reportAnalysisTitle: '异动归因拆解 (Attribution Analysis)',
-    reportAnalysisBody: '通过对 CRM 会员库留存数据 [1] 与全域媒介投放日志的交叉对比，系统捕捉到一个致命的异常：在 Q3 期间，当核心电商大促的折扣补贴力度环比追加 15% 时 [2]，线下专柜的新客获取效率及客单价出现了几乎等比例的衰退。这强烈表明，品牌正在发生严重的“内部渠道相食效应 (Cannibalization)”——看似增长的电商订单，实则是用极高的毛利补贴，洗劫了原本属于线下的高净值老客。此外，星图爬虫数据显示，抖音端顶层流量 (A1-A3人群) 的竞价成本已触及天花板 [3]，传统的泛流量采买策略已在经济账上彻底破产。',
+    reportAnalysisPoints: [
+      {
+        title: '全渠道相食效应 (Cannibalization)',
+        desc: '交叉对比 CRM 会员库留存数据 [1] 与全域媒介投放日志发现：Q3 期间电商折扣补贴环比追加 15% 时 [2]，线下专柜新客效率出现等比例衰退。激进的线上促销击穿了线下价格护城河，将原本属于线下的高净值老客洗劫至线上。'
+      },
+      {
+        title: '顶层流量成本触顶 (CAC vs LTV)',
+        desc: '星图爬虫数据显示，抖音端顶层流量 (A1-A3人群) 的竞价成本已触及天花板 [3]，传统的泛流量采买策略在经济账上彻底破产，整体客流流转漏斗出现结构性断裂。'
+      }
+    ],
     reportEvidenceTitle: '数据佐证 (Data Evidence)',
     reportSourcesTitle: '外部智库与数据血缘 (External Lineage)',
 
