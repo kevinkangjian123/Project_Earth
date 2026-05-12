@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     // Use 'python3' as defined in our Hybrid Dockerfile
     const pythonScriptPath = join(process.cwd(), 'python_engine', 'scorecard_to_mars_adapter.py');
     
-    return new Promise((resolve) => {
+    return new Promise<NextResponse>((resolve) => {
       const pyProcess = spawn('python3', [pythonScriptPath, tempInputPath, tempOutputPath]);
 
       pyProcess.stderr.on('data', (data) => {
