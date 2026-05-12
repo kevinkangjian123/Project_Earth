@@ -19,7 +19,7 @@ import { FileUploader } from "@/components/FileUploader";
 import { dict, Language } from "@/lib/i18n";
 
 type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral'; lineage: string; businessValue: string; };
-type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string };
+type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string; isAnomaly?: boolean };
 
 const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => (
   <div className="group relative inline-block">
@@ -75,7 +75,7 @@ export default function Dashboard() {
     { id: 'm2', name: t.m_spend_xhs_name, type: 'active', value: spendXhs, unit: 'k', description: t.m_spend_xhs_desc },
     { id: 'm3', name: t.m_discount_jd_name, type: 'active', value: discountJd, unit: '%', description: t.m_discount_jd_desc },
     { id: 'm4', name: t.m_discount_off_name, type: 'active', value: discountOff, unit: '%', description: t.m_discount_off_desc },
-    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: pCompDy, unit: '%', description: t.p_comp_dy_desc },
+    { id: 'p1', name: t.p_comp_dy_name, type: 'passive', value: pCompDy, unit: '%', description: t.p_comp_dy_desc, isAnomaly: true },
     { id: 'p2', name: t.p_macro_gdp_name, type: 'passive', value: pMacroGdp, unit: '%', description: t.p_macro_gdp_desc },
     { id: 'p3', name: t.p_cat_tmall_name, type: 'passive', value: pCatTmall, unit: '%', description: t.p_cat_tmall_desc },
   ];
@@ -309,7 +309,7 @@ export default function Dashboard() {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
                           <p className="text-xs font-medium text-slate-700">{metric.name}</p>
-                          {metric.id === 'p1' && (
+                          {metric.isAnomaly && (
                             <button 
                               onClick={() => setIsAgentOpen(true)}
                               className="text-[10px] bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-0.5 rounded-full flex items-center shadow-sm cursor-pointer transition-colors shrink-0"
