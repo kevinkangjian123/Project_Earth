@@ -33,7 +33,7 @@ export const dict = {
       }
     ],
     reportRecommendationTitle: 'Actionable Strategic Recommendation',
-    reportRecommendationBody: 'The core strategy to break this cycle is: <strong>Force-stop the internal price war</strong>. Within the next 48 hours, eCommerce discount rates must be capped below 10%. We must sacrifice short-term "vanity volume" to protect the core offline profitability from complete erosion. Concurrently, the freed budget must be heavily reallocated to the top-of-funnel social seeding platforms to rebuild the customer pipeline. Please use the [Strategic Simulator] below to validate this P&L projection.',
+    reportRecommendationBody: 'Based on the diagnostic data, the system recommends prioritizing the <strong>alleviation of internal channel cannibalization</strong>. To protect offline profitability, you may consider moderately reducing eCommerce discount rates (e.g., capping near 10%). Concurrently, we suggest reallocating the freed budget toward top-of-funnel social seeding platforms to replenish customer acquisition. Please use the [Strategic Simulator] below to adjust these levers and project the P&L impact of various resource allocation scenarios.',
     reportEvidenceTitle: 'Data Evidence',
     reportSourcesTitle: 'External Lineage',
 
@@ -106,7 +106,7 @@ export const dict = {
       }
     ],
     reportRecommendationTitle: '总控战略建议 (Actionable Recommendation)',
-    reportRecommendationBody: '系统给出的核心破局解是：<strong>强行切断内部价格战</strong>。必须在未来 48 小时内，将电商平台的折扣收缩至 10% 以内，牺牲短期的“虚假繁荣”，以保护线下核心大盘不被彻底击穿。同时，释放的预算不能闲置，必须重仓投入到社交种草平台的顶部漏斗，重新蓄水。请在下方【战略推演模拟器】中拉动滑块进行验证。',
+    reportRecommendationBody: '基于上述诊断，系统建议优先考虑<strong>缓解内部渠道的价格内耗</strong>。为保护线下基本盘的盈利能力，您可以尝试适度收缩线上电商的折扣力度（例如控制在 10% 左右）。同时，对于由此释放出的营销预算，建议向社交种草平台的顶部漏斗倾斜，以重新进行流量蓄水。您可以直接在下方的【战略推演模拟器】中拉动滑块，自主预演不同资源配置方案对最终利润大盘的影响。',
     reportEvidenceTitle: '数据佐证 (Data Evidence)',
     reportSourcesTitle: '外部智库与数据血缘 (External Lineage)',
 
