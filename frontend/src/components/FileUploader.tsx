@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
+import { UploadCloud, Loader2, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
+import { dict, Language } from "@/lib/i18n";
 
 interface FileUploaderProps {
   onUploadSuccess: (data: any) => void;
+  lang: Language;
 }
 
-export function FileUploader({ onUploadSuccess }: FileUploaderProps) {
+export function FileUploader({ onUploadSuccess, lang }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper to compute SHA-256 in the browser
+  const t = dict[lang];
+
   const computeFileHash = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
@@ -26,45 +29,53 @@ export function FileUploader({ onUploadSuccess }: FileUploaderProps) {
     setError(null);
 
     try {
-      // 1. Edge-Side De-duplication (SHA-256 Hashing)
       const hash = await computeFileHash(file);
-      console.log(`[MARS Edge] File SHA-256 computed: ${hash}`);
+      console.log(`[MARS Edge] SHA-256: ${hash}`);
 
-      // Check client-side session cache to avoid redundant API calls
       const cachedFact = sessionStorage.getItem(`mars_fact_${hash}`);
       if (cachedFact) {
-        console.log(`[MARS Edge] Cache Hit! Instantly restoring facts for hash: ${hash}`);
-        // Simulate a tiny delay for UX
         await new Promise(r => setTimeout(r, 600)); 
         onUploadSuccess(JSON.parse(cachedFact));
         setIsProcessing(false);
         return;
       }
 
-      // 2. If Cache Miss, send to Backend API Bridge
       const formData = new FormData();
       formData.append('file', file);
       formData.append('hash', hash);
 
-      // We will create this API route next
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        body: formData,
-      });
+      // Add a slight timeout safeguard for fetch
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+      let response;
+      try {
+        response = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+      } catch (fetchErr: any) {
+        clearTimeout(timeoutId);
+        if (fetchErr.name === 'AbortError') {
+          throw new Error(lang === 'zh' ? "服务器响应超时 (60s)" : "Server Response Timeout (60s)");
+        }
+        throw new Error(`Network/Proxy Error (Zeabur Caddy might be blocking large files or connection dropped): ${fetchErr.message}`);
+      }
 
       if (!response.ok) {
-        throw new Error("Failed to process file on the server.");
+        const errText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errText}`);
       }
 
       const result = await response.json();
-
-      // 3. Store result in ephemeral session memory using the Hash
       sessionStorage.setItem(`mars_fact_${hash}`, JSON.stringify(result));
-      
       onUploadSuccess(result);
 
     } catch (err: any) {
-      setError(err.message || "An unknown error occurred during analysis.");
+      console.error("Upload Error:", err);
+      setError(err.message || (lang === 'zh' ? "未知错误" : "Unknown error"));
     } finally {
       setIsProcessing(false);
     }
@@ -100,7 +111,7 @@ export function FileUploader({ onUploadSuccess }: FileUploaderProps) {
           className="hidden" 
           id="file-upload" 
           onChange={onFileSelect}
-          accept=".csv,.json,.xlsx,.pdf"
+          accept=".csv,.json,.xlsx,.pdf,.txt"
         />
         <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer w-full">
           <div className="p-4 bg-slate-100 rounded-full mb-4">
@@ -112,25 +123,23 @@ export function FileUploader({ onUploadSuccess }: FileUploaderProps) {
           </div>
           
           <h3 className="text-lg font-medium text-slate-800">
-            {isProcessing ? "Computing Kinematic Momentum..." : "Upload Scorecard Data"}
+            {isProcessing ? t.computing : t.uploadTitle}
           </h3>
           
           <p className="text-slate-500 text-sm mt-1 mb-4 text-center max-w-md">
-            {isProcessing 
-              ? "Running SHA-256 edge verification and invoking MARS Python Engine..." 
-              : "Drop your Excel, CSV, or JSON here. MARS uses an ephemeral memory strategy with SHA-256 de-duplication."}
+            {isProcessing ? t.computingDesc : t.uploadDesc}
           </p>
 
           {!isProcessing && (
             <div className="px-6 py-2 bg-slate-900 text-white text-sm rounded-lg shadow-sm">
-              Browse Files
+              {t.browseFiles}
             </div>
           )}
         </label>
       </motion.div>
 
       {error && (
-        <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-lg flex items-start text-sm border border-red-100">
+        <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-lg flex items-start text-sm border border-red-100 overflow-x-auto whitespace-pre-wrap">
           <AlertTriangle className="w-4 h-4 mr-2 shrink-0 mt-0.5" />
           <p>{error}</p>
         </div>

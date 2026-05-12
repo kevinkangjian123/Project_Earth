@@ -12,17 +12,15 @@ import {
   ChevronRight,
   Info,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Globe
 } from "lucide-react";
 import { FileUploader } from "@/components/FileUploader";
+import { dict, Language } from "@/lib/i18n";
 
-// --- Mock Data Types ---
 type Fact = { id: string; label: string; value: string; trend: 'up' | 'down' | 'neutral' };
 type Metric = { id: string; name: string; type: 'active' | 'passive'; value: number; unit: string; description: string };
 
-// --- UI Components ---
-
-// 1. Tooltip Wrapper (for professional term explanations)
 const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => (
   <div className="group relative inline-block">
     {children}
@@ -34,61 +32,67 @@ const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }
 );
 
 export default function Dashboard() {
-  // State
+  const [lang, setLang] = useState<Language>('zh');
+  const t = dict[lang];
+
   const [hasUploaded, setHasUploaded] = useState(false);
   const [isAgentOpen, setIsAgentOpen] = useState(false);
   
-  // Simulator State (Active Metrics)
   const [marketingSpend, setMarketingSpend] = useState(50);
   const [discountRate, setDiscountRate] = useState(15);
 
-  // Mock Facts (Top Tier)
   const facts: Fact[] = [
     { id: '1', label: 'GMV (YTD)', value: '$12.4M', trend: 'down' },
     { id: '2', label: 'CAC', value: '$45.20', trend: 'up' },
     { id: '3', label: 'Retention', value: '42%', trend: 'neutral' },
   ];
 
-  // Mock Simulator Metrics (Bottom Tier)
   const metrics: Metric[] = [
-    { id: 'm1', name: 'Marketing Spend', type: 'active', value: marketingSpend, unit: 'k', description: '可人为调控的市场投放预算' },
-    { id: 'm2', name: 'Discount Rate', type: 'active', value: discountRate, unit: '%', description: '全渠道平均价格折扣率' },
-    { id: 'm3', name: 'Macro Economy', type: 'passive', value: 2.1, unit: '%', description: 'GDP 预期增速 (客观决定，不可干预)' },
-    { id: 'm4', name: 'Competitor Traffic', type: 'passive', value: +15, unit: '%', description: '竞品自然流量涌入 (客观决定，不可干预)' },
+    { id: 'm1', name: t.m1_name, type: 'active', value: marketingSpend, unit: 'k', description: t.m1_desc },
+    { id: 'm2', name: t.m2_name, type: 'active', value: discountRate, unit: '%', description: t.m2_desc },
+    { id: 'm3', name: t.m3_name, type: 'passive', value: 2.1, unit: '%', description: t.m3_desc },
+    { id: 'm4', name: t.m4_name, type: 'passive', value: +15, unit: '%', description: t.m4_desc },
   ];
 
   return (
     <div className="min-h-screen flex bg-[var(--background)] text-[var(--foreground)] selection:bg-blue-100 selection:text-blue-900">
       
-      {/* Main Dashboard Area */}
       <main className={`flex-1 transition-all duration-500 ease-in-out ${isAgentOpen ? 'mr-96' : 'mr-0'}`}>
         <div className="max-w-6xl mx-auto p-8 space-y-12">
           
-          {/* Header */}
           <header className="flex justify-between items-end border-b border-slate-200 pb-6">
             <div>
-              <h1 className="text-3xl font-light tracking-tight text-slate-900">MARS Strategic Engine</h1>
-              <p className="text-slate-500 mt-2 text-sm">Clinical-grade business digital twin & diagnostic co-pilot.</p>
+              <h1 className="text-3xl font-light tracking-tight text-slate-900">{t.headerTitle}</h1>
+              <p className="text-slate-500 mt-2 text-sm">{t.headerSubtitle}</p>
             </div>
-            <div className="flex space-x-3 text-sm text-slate-500">
-              <span className="flex items-center"><Activity className="w-4 h-4 mr-1 text-green-500" /> System Online</span>
+            <div className="flex space-x-6 text-sm text-slate-500 items-center">
+              
+              <button 
+                onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+                className="flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors text-slate-700 font-medium border border-slate-200"
+              >
+                <Globe className="w-4 h-4 mr-1" />
+                <span>{lang === 'en' ? 'EN' : '中文'}</span>
+              </button>
+
+              <span className="flex items-center"><Activity className="w-4 h-4 mr-1 text-green-500" /> {t.systemOnline}</span>
             </div>
           </header>
 
-          {/* TIER 1: Upload & Fact Check (体检表) */}
           <section className="space-y-4">
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <UploadCloud className="w-5 h-5 text-blue-600" />
-              <h2>Tier 1: Data Ingestion & Facts</h2>
+              <h2>{t.tier1Title}</h2>
             </div>
             
             {!hasUploaded ? (
-              <FileUploader onUploadSuccess={(data) => {
-                console.log("[UI] Received Facts from Engine:", data);
-                // Here we would dynamically update the `facts` state. 
-                // For MVP testing, we'll just trigger the UI transition.
-                setHasUploaded(true);
-              }} />
+              <FileUploader 
+                lang={lang}
+                onUploadSuccess={(data) => {
+                  console.log("[UI] Received Facts from Engine:", data);
+                  setHasUploaded(true);
+                }} 
+              />
             ) : (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -109,55 +113,48 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* TIER 2: Diagnostic Report (确诊区) */}
           <section className={`space-y-4 transition-opacity duration-700 ${hasUploaded ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <FileText className="w-5 h-5 text-blue-600" />
-              <h2>Tier 2: Executive Diagnostic Report</h2>
+              <h2>{t.tier2Title}</h2>
             </div>
             
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-6">
               <div className="border-l-4 border-blue-600 pl-4 py-1 bg-gradient-to-r from-blue-50 to-transparent">
-                <h3 className="text-xl font-semibold text-slate-900">BLUF: Profitability Decay Driven by Friction</h3>
+                <h3 className="text-xl font-semibold text-slate-900">{t.blufTitle}</h3>
               </div>
               
               <div className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed">
-                <p>
-                  Based on the physical <Tooltip text="P=M*A. A physics-based method to filter out noise and find the root cause."><span className="underline decoration-dotted cursor-help text-slate-800 font-medium">kinematic momentum collapse</span></Tooltip> of the uploaded Scorecard, the system <strong>recommends</strong> shifting focus from generic traffic acquisition to reducing checkout friction. 
-                </p>
-                <p>
-                  The data strongly suggests that the recent 70% drop in ROI is not an external market artifact, but rather an internal structural issue. The <Tooltip text="A measure of resistance in the customer journey"><span className="underline decoration-dotted cursor-help text-slate-800 font-medium">Friction Coefficient</span></Tooltip> at the payment gateway has increased by 0.4, causing high-momentum drop-offs.
-                </p>
+                <p>{t.blufPara1}</p>
+                <p>{t.blufPara2}</p>
               </div>
               
               <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-start space-x-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-500">
-                  <strong className="text-slate-700">Fact-Check Status:</strong> 100% grounded. All conclusions trace back to the Ephemeral Fact Cards above. XML System Harness actively prevented hallucination of external competitor actions.
+                  <strong className="text-slate-700">{t.factCheckStatus}</strong> {t.factCheckDesc}
                 </p>
               </div>
             </div>
           </section>
 
-          {/* TIER 3: Strategic Simulator (战略模拟器) */}
           <section className={`space-y-4 pb-20 transition-opacity duration-700 delay-100 ${hasUploaded ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
             <div className="flex items-center space-x-2 text-slate-800 font-medium">
               <SlidersHorizontal className="w-5 h-5 text-blue-600" />
-              <h2>Tier 3: Strategic Simulator</h2>
+              <h2>{t.tier3Title}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Active Metrics */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
                 <h3 className="text-sm font-semibold text-slate-800 flex justify-between">
-                  <span>Active Metrics</span>
-                  <span className="text-xs font-normal text-slate-400">Controllable</span>
+                  <span>{t.activeMetrics}</span>
+                  <span className="text-xs font-normal text-slate-400">{t.controllable}</span>
                 </h3>
                 
                 <div className="space-y-5">
                   <div>
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-600 font-medium">Marketing Spend</span>
+                      <span className="text-slate-600 font-medium">{t.m1_name}</span>
                       <span className="text-blue-600 font-semibold">${marketingSpend}k</span>
                     </div>
                     <input 
@@ -169,7 +166,7 @@ export default function Dashboard() {
                   
                   <div>
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-600 font-medium">Discount Rate</span>
+                      <span className="text-slate-600 font-medium">{t.m2_name}</span>
                       <span className="text-blue-600 font-semibold">{discountRate}%</span>
                     </div>
                     <input 
@@ -181,15 +178,14 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Passive Metrics */}
               <div className="bg-slate-50 rounded-xl border border-slate-200 shadow-sm p-6 space-y-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Lock className="w-24 h-24" />
                 </div>
                 
                 <h3 className="text-sm font-semibold text-slate-800 flex justify-between relative z-10">
-                  <span>Passive Metrics</span>
-                  <span className="text-xs font-normal text-slate-500 flex items-center"><Lock className="w-3 h-3 mr-1"/> Objective</span>
+                  <span>{t.passiveMetrics}</span>
+                  <span className="text-xs font-normal text-slate-500 flex items-center"><Lock className="w-3 h-3 mr-1"/> {t.objective}</span>
                 </h3>
 
                 <div className="space-y-3 relative z-10">
@@ -208,13 +204,12 @@ export default function Dashboard() {
               </div>
             </div>
             
-            {/* Simulation Result */}
             <div className="bg-slate-900 text-white p-5 rounded-xl flex items-start space-x-4 shadow-lg shadow-slate-900/10">
               <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium">Projected Outcome</h4>
+                <h4 className="text-sm font-medium">{t.projectedOutcome}</h4>
                 <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  Adjusting Marketing Spend to ${marketingSpend}k while Discount Rate sits at {discountRate}%, under the constraint of a {metrics[2].value}% GDP growth, is <strong>projected</strong> to yield a 12% recovery in GMV over 30 days. We <strong>recommend</strong> monitoring the competitor traffic closely as a leading indicator.
+                  {t.projectedDesc.replace('{marketingSpend}', marketingSpend.toString()).replace('{discountRate}', discountRate.toString()).replace('{gdp}', metrics.find(m => m.id === 'm3')?.value.toString() || '0')}
                 </p>
               </div>
             </div>
@@ -223,7 +218,6 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* RIGHT PANEL: Agent Copilot */}
       <AnimatePresence>
         {isAgentOpen && (
           <motion.aside 
@@ -239,8 +233,8 @@ export default function Dashboard() {
                   <Bot className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-800">MARS Copilot</h3>
-                  <p className="text-[10px] text-slate-500">Context-Aware</p>
+                  <h3 className="text-sm font-semibold text-slate-800">{t.agentTitle}</h3>
+                  <p className="text-[10px] text-slate-500">{t.contextAware}</p>
                 </div>
               </div>
               <button 
@@ -254,15 +248,14 @@ export default function Dashboard() {
             <div className="flex-1 p-5 overflow-y-auto space-y-4">
               <div className="bg-slate-50 border border-slate-100 rounded-lg p-3 text-xs text-slate-600 leading-relaxed relative">
                 <div className="absolute -left-1 top-4 w-2 h-2 rounded-full bg-blue-500" />
-                I am actively observing the Dashboard. I see you have adjusted the Marketing Spend to <strong>${marketingSpend}k</strong>. 
-                Based on the diagnostic facts, I <strong>suggest</strong> reviewing the CAC metric before confirming this action. How can I assist you further?
+                <span dangerouslySetInnerHTML={{ __html: t.agentGreeting.replace('${marketingSpend}', marketingSpend.toString()) }} />
               </div>
             </div>
             
             <div className="p-4 border-t border-slate-100 bg-white">
               <input 
                 type="text" 
-                placeholder="Ask MARS about the data..." 
+                placeholder={t.agentInputPlaceholder}
                 className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-500 transition-all"
               />
             </div>
@@ -270,7 +263,6 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Floating Agent Toggle */}
       {!isAgentOpen && (
         <motion.button
           whileHover={{ scale: 1.05 }}
